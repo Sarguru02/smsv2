@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const { studentLogin, teacherLogin } = require("./controllers/authControllers");
-const { getData } = require("./controllers/dataControllers");
+const { getData, uploadData } = require("./controllers/dataControllers");
 
 const app = express();
 
@@ -24,6 +24,8 @@ app.post("/student/login", studentLogin);
 app.post("/student/data", getData);
 
 app.post("/teacher/login", teacherLogin);
+
+app.post("/teacher/upload", uploadData);
 
 port = process.env.PORT;
 

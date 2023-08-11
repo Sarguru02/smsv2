@@ -38,13 +38,20 @@ export function AuthProvider({ children }) {
         var data = {};
         sheetNames.forEach((sheet) => {
           const ws = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
-          if (sheet.toLowerCase() === "details") {
-            data = { ...data, details: { ...ws } };
-          } else {
-            const newobj = JSON.stringify({ ...ws });
-            const obj = JSON.parse(`{"${sheet}": ${newobj}}`);
-            data = { ...data, ...obj };
-          }
+          var sheetObj = {};
+          const obj = ws.map((doc) => {
+            const tempObj = JSON.parse(
+              `{"${doc.RollNo}": ${JSON.stringify({ ...doc })}}`
+            );
+            const finalObj = JSON.parse(
+              `{"${sheet}":${JSON.stringify({ ...tempObj })}}`
+            );
+            sheetObj = { ...sheetObj, ...finalObj[sheet] };
+          });
+          const finalData = JSON.parse(
+            `{"${sheet}":${JSON.stringify({ ...sheetObj })}}`
+          );
+          data = { ...data, ...finalData };
         });
         resolve(data);
       };

@@ -7,9 +7,9 @@ module.exports.studentLogin = async (req, res) => {
   const detail = await getDoc(docRef);
   if (detail.exists() && userType === "student") {
     const data = detail.data();
-    const student = JSON.parse(data[`${username}`]);
-    if (student.username === username && student.password === password) {
-      delete student["password"];
+    const student = data[`${username}`];
+    if (student.RollNo === username && student.Password === password) {
+      delete student["Password"];
       return res.status(200).json({
         ...student,
         isLogged: true,
