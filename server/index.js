@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     credentials: true,
-    origin: true,
+    origin: "https://sbioatrichy.vercel.app",
   })
 );
 
