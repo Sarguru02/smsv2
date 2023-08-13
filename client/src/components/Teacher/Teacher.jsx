@@ -15,7 +15,7 @@ const Teacher = () => {
   const { parseExcel, currentUser } = useAuth();
   useEffect(() => {
     if (!currentUser || !currentUser.isLogged) {
-      alert("Session expired");
+      console.log(currentUser);
       return navigate("/");
     }
   }, []);

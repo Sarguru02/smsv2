@@ -6,11 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 const TeacherLogin = () => {
   const [input, setInput] = useState({ userType: "teacher" });
-  const { login, currentUser } = useAuth();
+  const { login, currentUser, errorMsg, successMessage } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     if (currentUser && currentUser.isLogged) {
-      navigate(`/${currentUser.userType}/home`);
+      return navigate(`/${currentUser.userType}/home`);
     }
   }, []);
   function handleSubmit(e) {
@@ -52,6 +52,8 @@ const TeacherLogin = () => {
             id="pwd"
           />
         </div>
+        {errorMsg && <p className="error-msg">{errorMsg}</p>}
+        {successMessage && <p className="success-msg">{successMessage}</p>}
         <button className="submit-btn" type="submit">
           Submit
         </button>
