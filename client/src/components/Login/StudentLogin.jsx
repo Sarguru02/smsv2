@@ -9,7 +9,7 @@ const StudentLogin = () => {
   const { login, errorMsg, successMessage, currentUser } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    if (currentUser && !currentUser.isLogged) {
+    if (currentUser && currentUser.isLogged) {
       navigate(`/${currentUser.userType}/home`);
     }
   }, []);

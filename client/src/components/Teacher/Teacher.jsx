@@ -13,12 +13,13 @@ const Teacher = () => {
   const navigate = useNavigate();
   const [successMsg, setSuccessMsg] = useState();
   const { parseExcel, currentUser } = useAuth();
-  // useEffect(() => {
-  //   if (currentUser && !currentUser.isLogged) {
-  //     alert("Not logged in");
-  //     return navigate("/");
-  //   }
-  // }, []);
+  useEffect(() => {
+    console.log(currentUser);
+    if (!currentUser || !currentUser.isLogged) {
+      alert("Session expired");
+      return navigate("/");
+    }
+  }, []);
   function handleSubmit(e) {
     e.preventDefault();
     if (!file) {

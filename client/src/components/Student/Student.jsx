@@ -16,6 +16,10 @@ const Student = () => {
     });
   }
   useEffect(() => {
+    if (!currentUser || !currentUser.isLogged) {
+      alert("Session Expired!");
+      return navigate("/");
+    }
     const { std, RollNo } = currentUser;
     axios
       .post(

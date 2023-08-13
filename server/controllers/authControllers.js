@@ -30,8 +30,9 @@ module.exports.studentLogin = async (req, res) => {
 module.exports.teacherLogin = async (req, res) => {
   const { userType, username, password } = req.body;
   const docRef = doc(db, "teachers", username);
-  const teacher = await getDoc(docRef);
-  if (teacher.exists() && userType === "teacher") {
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists() && userType === "teacher") {
+    const teacher = docSnap.data();
     if (teacher.username === username && teacher.password === password) {
       delete teacher["password"];
       return res.status(200).json({
