@@ -1,0 +1,56 @@
+.student-details {
+  display: flex;
+  height: 50vh;
+  color: white;
+  align-items: center;
+  justify-content: space-around;
+}
+.photo {
+  background-color: rgba(255, 255, 255, 0.5);
+  height: 20vh;
+  width: 20vh;
+  padding: auto;
+  margin: auto;
+}
+.detail-right {
+  width: 50vw;
+}
+
+.name,
+.rollno,
+.std,
+.section {
+  min-height: 7vh;
+  color: #caf0f8;
+}
+
+.student-marks {
+  text-align: center;
+}
+
+table,
+th,
+td {
+  display: inline-flexbox;
+  margin-top: 5vh;
+  padding: 2vh 8vh;
+  font-size: 1.2rem;
+  border: 3px solid #06d6a0;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+  margin-bottom: 23vh;
+}
+
+th {
+  color: #06f9cc;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+h2 {
+  color: #caf0f8;
+  text-decoration: underline;
+  font-weight: 800;
+}

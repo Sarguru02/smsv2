@@ -10,8 +10,14 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState();
-  const value = { login, currentUser, parseExcel };
+  const [errorMsg, setErrorMsg] = useState();
+  const [successMessage, setSuccessMessage] = useState();
+  const [loading, setLoading] = useState(false);
+  const value = { login, currentUser, parseExcel, errorMsg, successMessage };
   function login(input) {
+    setLoading(true);
+    setErrorMsg("");
+    setSuccessMessage("");
     axios
       .post(`/${input.userType}/login`, input, {
         headers: {
@@ -20,14 +26,21 @@ export function AuthProvider({ children }) {
       })
       .then((response) => {
         setCurrentUser(() => response.data);
+        setLoading(false);
+        setSuccessMessage("User Logged in");
         navigate(`/${input.userType}/home`);
       })
       .catch((e) => {
+        setErrorMsg("Failed to login");
+        setLoading(false);
         console.log(e);
       });
   }
 
   function parseExcel(file, cb) {
+    setErrorMsg();
+    setSuccessMessage();
+    setLoading(true);
     const promise = new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsArrayBuffer(file);
@@ -39,7 +52,7 @@ export function AuthProvider({ children }) {
         sheetNames.forEach((sheet) => {
           const ws = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
           var sheetObj = {};
-          const obj = ws.map((doc) => {
+          ws.map((doc) => {
             const tempObj = JSON.parse(
               `{"${doc.RollNo}": ${JSON.stringify({ ...doc })}}`
             );
@@ -57,9 +70,15 @@ export function AuthProvider({ children }) {
       };
     });
 
-    promise.then((data) => {
-      cb(data);
-    });
+    promise
+      .then((data) => {
+        cb(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setErrorMsg("Failed to parse Excel file");
+        setLoading(false);
+      });
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -10,6 +10,7 @@ module.exports.getData = async (req, res) => {
     if (doc.id !== "details") {
       const data = doc.data();
       const required = data[RollNo];
+      delete required["RollNo"];
       const dat = JSON.parse(`{"${doc.id}":${JSON.stringify(required)}}`);
       returnData = { ...returnData, ...dat };
     }

@@ -15,6 +15,7 @@ module.exports.studentLogin = async (req, res) => {
         isLogged: true,
         msg: "Success",
         std,
+        userType,
       });
     } else {
       return res
@@ -37,6 +38,7 @@ module.exports.teacherLogin = async (req, res) => {
         ...teacher,
         isLogged: true,
         msg: "Success",
+        userType,
       });
     } else {
       return res

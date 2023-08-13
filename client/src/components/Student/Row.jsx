@@ -5,7 +5,7 @@ const Row = ({ sub, idx, obj }) => {
     <tr>
       <td>{idx + 1}</td>
       <td>{sub.toUpperCase()}</td>
-      <td>{obj[sub]}</td>
+      <td>{obj[`${idx + 1}_${sub}`]}</td>
     </tr>
   );
 };
