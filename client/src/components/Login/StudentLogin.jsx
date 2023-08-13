@@ -15,7 +15,6 @@ const StudentLogin = () => {
   }, []);
   function handleSubmit(e) {
     e.preventDefault();
-    console.log(input);
     login(input);
   }
   return (
