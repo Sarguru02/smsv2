@@ -10,7 +10,7 @@ import Teacher from "./components/Teacher/Teacher";
 import Student from "./components/Student/Student";
 import Loading from "./components/Loading/Loading";
 
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = "https://smsv2.vercel.app/";
 
 const App = () => {
   const { loading } = useAuth();
