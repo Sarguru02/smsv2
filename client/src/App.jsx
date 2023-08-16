@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Teacher from "./components/Teacher/Teacher";
 import Student from "./components/Student/Student";
 import Loading from "./components/Loading/Loading";
+import Navbar from "./components/Navbar/Navbar";
 
 axios.defaults.baseURL = "https://smsv2.vercel.app/";
 
