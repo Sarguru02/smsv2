@@ -27,6 +27,8 @@
 .section {
   min-height: 7vh;
   color: #caf0f8;
+  font-size: 2rem;
+  font-weight: bold;
 }
 
 .student-marks {
@@ -65,4 +67,33 @@ h2 {
 
 .table-container {
   overflow-x: hidden;
+}
+
+@media (max-width: 847px) {
+  .name,
+  .rollno,
+  .section,
+  .std {
+    font-size: 2rem;
+  }
+  table,
+  th,
+  td {
+    padding: 1vh 2vh;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 566px) {
+  .name,
+  .rollno,
+  .section,
+  .std {
+    font-size: 1.5rem;
+  }
+  table,
+  th,
+  td {
+    font-size: 1rem;
+  }
 }

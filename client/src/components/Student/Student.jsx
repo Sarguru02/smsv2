@@ -39,17 +39,17 @@ const Student = () => {
     <div className="student-container">
       <div className="student-details">
         <div className="detail-right">
-          <h1 className="name">Name: {currentUser && currentUser.Name}</h1>
-          <h1 className="rollno">
+          <p className="name">Name: {currentUser && currentUser.Name}</p>
+          <p className="rollno">
             Roll No. : {currentUser && currentUser.RollNo}
-          </h1>
-          <h1 className="std">
+          </p>
+          <p className="std">
             Class:{" "}
             {currentUser &&
               `${currentUser.std}-${currentUser["RollNo"].charAt(
                 currentUser["RollNo"].length - 4
               )}`}
-          </h1>
+          </p>
         </div>
       </div>
       <div className="student-marks">

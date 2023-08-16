@@ -11,3 +11,15 @@
   border-bottom-right-radius: 4px;
   box-shadow: 5px 2px rgba(0, 0, 0, 0.4);
 }
+
+@media (max-width: 847px) {
+  .navbar {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 566px) {
+  .navbar {
+    font-size: 1.5rem;
+  }
+}
