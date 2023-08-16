@@ -38,17 +38,17 @@ const Student = () => {
   return (
     <div className="student-container">
       <div className="student-details">
-        <div className="photo"></div>
         <div className="detail-right">
           <h1 className="name">Name: {currentUser && currentUser.Name}</h1>
           <h1 className="rollno">
             Roll No. : {currentUser && currentUser.RollNo}
           </h1>
-          <h1 className="std">Class: {currentUser && currentUser.std}</h1>
-          <h1 className="section">
-            Section:{" "}
+          <h1 className="std">
+            Class:{" "}
             {currentUser &&
-              currentUser["RollNo"].charAt(currentUser["RollNo"].length - 4)}
+              `${currentUser.std}-${currentUser["RollNo"].charAt(
+                currentUser["RollNo"].length - 4
+              )}`}
           </h1>
         </div>
       </div>
@@ -56,7 +56,7 @@ const Student = () => {
         {data &&
           Object.keys(data).map((key) => {
             return (
-              <div key={crypto.randomUUID()}>
+              <div className="table-container" key={crypto.randomUUID()}>
                 <h2 key={crypto.randomUUID()}>{key.toUpperCase()}</h2>
                 <table align="center" key={crypto.randomUUID()}>
                   <thead>

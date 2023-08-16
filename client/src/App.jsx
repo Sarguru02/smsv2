@@ -16,6 +16,7 @@ const App = () => {
   const { loading } = useAuth();
   return (
     <div>
+      <Navbar />
       {!loading && (
         <Routes>
           <Route path="/" element={<Home />} />
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/student/home" element={<Student />} />
         </Routes>
       )}
+      {loading && <Loading />}
     </div>
   );
 };

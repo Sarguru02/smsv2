@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=McLaren&family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Eczar&family=McLaren&family=Montserrat&display=swap");
 
 body {
   padding: 0;
   margin: 0;
-  background-color: #118ab2;
+  background-color: #279eff;
+  overflow-x: hidden;
 }
 :root {
   font-family: "Montserrat", Arial, Helvetica, sans-serif;
@@ -58,7 +59,7 @@ input {
 }
 
 .submit-btn {
-  background-color: #219ebc;
+  background-color: #40f8ff;
   color: #023047;
   height: 2rem;
   width: 5rem;
