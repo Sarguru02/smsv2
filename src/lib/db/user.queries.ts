@@ -1,19 +1,16 @@
 import { prisma } from "./prisma";
 
-async function createUser(username: string, password: string, role: 'STUDENT' | 'TEACHER') {
+export type UserRole = "STUDENT" | "TEACHER" | "ADMIN";
+
+async function createUser(username: string, password: string, role: UserRole) {
   return prisma.user.create({
     data: {
+      id: crypto.randomUUID(),
       username,
       password,
       role,
       createdAt: new Date(), 
       updatedAt: new Date()
-    }, 
-    select: {
-      id: true, 
-      username: true, 
-      role: true,
-      createdAt: true,
     }
   });
 }
@@ -24,7 +21,7 @@ async function getUserByUsername(username: string) {
   });
 }
 
-async function getUserById (id: number) {
+async function getUserById (id: string) {
   return prisma.user.findUnique({
     where: { id }
   });
