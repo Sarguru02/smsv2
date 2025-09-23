@@ -13,3 +13,77 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique // rollNO or teacherId
+  password  String    // hashed password
+  role      Role      // STUDENT or TEACHER
+  student   Student?  @relation(fields: [studentId], references: [id])
+  studentId Int?      @unique
+  teacher   Teacher?  @relation(fields: [teacherId], references: [id])
+  teacherId Int?      @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Student {
+  id        Int      @id @default(autoincrement())
+  rollNo    String   @unique
+  name      String
+  marks     Mark[]
+  user      User?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Teacher {
+  id        Int      @id @default(autoincrement())
+  name      String
+  user      User?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subject {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  marks     Mark[]
+}
+
+model Exam {
+  id        Int     @id @default(autoincrement())
+  name      String
+  type      ExamType
+  date      DateTime
+  marks     Mark[]
+}
+
+model Mark {
+  id        Int     @id @default(autoincrement())
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId Int
+
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  subjectId Int
+
+  exam      Exam    @relation(fields: [examId], references: [id])
+  examId    Int
+
+  score     Float
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, subjectId, examId])
+}
+
+enum ExamType {
+  CYCLE
+  SEMESTER
+  MIDTERM
+  FINAL
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
