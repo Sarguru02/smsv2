@@ -18,13 +18,16 @@ export default function StudentLoginPage() {
     e.preventDefault()
     setIsLoading(true)
     
-    // TODO: Implement actual authentication
-    console.log("Student login:", { rollNumber, password })
+    const { AuthClient } = await import('@/lib/auth-client')
+    const result = await AuthClient.login(rollNumber, password)
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
+    if (result.success) {
+      window.location.href = '/dashboard/student'
+    } else {
+      alert(result.error)
+    }
+    
+    setIsLoading(false)
   }
 
   return (

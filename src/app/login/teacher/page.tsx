@@ -18,13 +18,16 @@ export default function TeacherLoginPage() {
     e.preventDefault()
     setIsLoading(true)
     
-    // TODO: Implement actual authentication
-    console.log("Teacher login:", { employeeId, password })
+    const { AuthClient } = await import('@/lib/auth-client')
+    const result = await AuthClient.login(employeeId, password)
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
+    if (result.success) {
+      window.location.href = '/dashboard/teacher'
+    } else {
+      alert(result.error)
+    }
+    
+    setIsLoading(false)
   }
 
   return (
