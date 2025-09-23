@@ -15,75 +15,71 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique // rollNO or teacherId
-  password  String    // hashed password
-  role      Role      // STUDENT or TEACHER
-  student   Student?  @relation(fields: [studentId], references: [id])
-  studentId Int?      @unique
-  teacher   Teacher?  @relation(fields: [teacherId], references: [id])
-  teacherId Int?      @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        Int      @id @default(autoincrement())
+  username  String   @unique     // could be rollNo for student or ID for teacher
+  password  String               // store hashed password
+  role      Role                 // STUDENT or TEACHER
+
+  studentId String?              // soft link to Student
+  teacherId String?              // soft link to Teacher
+
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 model Student {
-  id        Int      @id @default(autoincrement())
-  rollNo    String   @unique
+  id        String   @id          // roll number (unique everywhere)
   name      String
-  marks     Mark[]
-  user      User?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  // no relations, just pure data
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 model Teacher {
-  id        Int      @id @default(autoincrement())
+  id        String   @id          // teacher unique ID
   name      String
-  user      User?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 model Subject {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  marks     Mark[]
+  id        String   @id
+  name      String
+  code      String   @unique
+
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 model Exam {
-  id        Int     @id @default(autoincrement())
-  name      String
-  type      ExamType
+  id        String   @id
+  name      String          // e.g., Cycle Test 1, Semester 1
+  type      ExamType        // CYCLE_TEST / SEMESTER
   date      DateTime
-  marks     Mark[]
+
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 model Mark {
-  id        Int     @id @default(autoincrement())
-  student   Student @relation(fields: [studentId], references: [id])
-  studentId Int
-
-  subject   Subject @relation(fields: [subjectId], references: [id])
-  subjectId Int
-
-  exam      Exam    @relation(fields: [examId], references: [id])
-  examId    Int
-
+  id        Int      @id @default(autoincrement())
+  studentId String              // references Student.id (soft link)
+  subjectId String              // references Subject.id (soft link)
+  examId    String              // references Exam.id (soft link)
   score     Float
-  createdAt DateTime @default(now())
 
-  @@unique([studentId, subjectId, examId])
-}
-
-enum ExamType {
-  CYCLE
-  SEMESTER
-  MIDTERM
-  FINAL
+  createdAt DateTime
+  updatedAt DateTime
 }
 
 enum Role {
   STUDENT
   TEACHER
+}
+
+enum ExamType {
+  CYCLE_TEST
+  SEMESTER
 }
