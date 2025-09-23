@@ -9,7 +9,7 @@ import { Users, ArrowLeft, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 
 export default function TeacherLoginPage() {
-  const [employeeId, setEmployeeId] = useState("")
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +19,7 @@ export default function TeacherLoginPage() {
     setIsLoading(true)
     
     const { AuthClient } = await import('@/lib/auth-client')
-    const result = await AuthClient.login(employeeId, password)
+    const result = await AuthClient.login(username, password)
     
     if (result.success) {
       window.location.href = '/dashboard/teacher'
@@ -50,18 +50,18 @@ export default function TeacherLoginPage() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle>Welcome Back, Teacher!</CardTitle>
-            <CardDescription>Enter your employee ID and password to access your account</CardDescription>
+            <CardDescription>Enter your username and password to access your account</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="employeeId">Employee ID</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="employeeId"
+                  id="username"
                   type="text"
-                  placeholder="Enter your employee ID"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
+                  placeholder="Enter your Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -97,12 +97,6 @@ export default function TeacherLoginPage() {
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
-            
-            <div className="mt-4 text-center">
-              <Link href="#" className="text-sm text-green-600 hover:underline dark:text-green-400">
-                Forgot your password?
-              </Link>
-            </div>
           </CardContent>
         </Card>
       </div>
