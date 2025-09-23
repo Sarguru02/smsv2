@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { Env } from '@/lib/EnvVars';
 
 interface TokenPayload {
   userId: number;
@@ -10,8 +11,7 @@ interface TokenPayload {
 
 function verifyToken(token: string): TokenPayload | null {
   try {
-    const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
+    return jwt.verify(token, Env.jwtSecret) as TokenPayload;
   } catch {
     return null;
   }

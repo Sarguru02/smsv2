@@ -1,18 +1,17 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { TeacherQueries} from '@/lib/db/teacher.queries';
-import { StudentQueries } from '@/lib/db/student.queries';
-import { UserQueries } from '@/lib/db/user.queries';
+import { UserQueries, UserRole } from '@/lib/db/user.queries';
+import { Env } from '@/lib/EnvVars';
 
 export interface TokenPayload {
-  userId: number;
-  role: 'STUDENT' | 'TEACHER';
+  userId: string;
+  role: UserRole;
   studentId?: number;
   teacherId?: number;
 }
 
 export class AuthService {
-  private static readonly JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key';
+  private static readonly JWT_SECRET = Env.jwtSecret;
   private static readonly SALT_ROUNDS = 12;
 
   static async hashPassword(password: string): Promise<string> {
@@ -35,18 +34,8 @@ export class AuthService {
     }
   }
 
-  static async createUser(username: string, password: string, role: 'STUDENT' | 'TEACHER') {
+  static async createUser(username: string, password: string, role: UserRole) {
     const hashedPassword = await this.hashPassword(password);
-
-    switch (role){
-      case 'TEACHER': 
-        await TeacherQueries.createTeacher(username);
-        break;
-      case 'STUDENT':
-        await StudentQueries.createStudent(username);
-        break;
-    }
-
     return UserQueries.createUser(username, hashedPassword, role);
   }
 
@@ -59,7 +48,7 @@ export class AuthService {
 
     const tokenPayload: TokenPayload = {
       userId: user.id,
-      role: user.role,
+      role: user.role as UserRole,
     };
 
     return {
