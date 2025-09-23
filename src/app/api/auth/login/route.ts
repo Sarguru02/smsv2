@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/lib/auth';
 import { z } from 'zod';
+import { UserRole } from '@/lib/db/user.queries';
 
 const loginSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
+  role: z.custom<UserRole>(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, password } = loginSchema.parse(body);
+    const { username, password, role } = loginSchema.parse(body);
 
     const result = await AuthService.authenticateUser(username, password);
 
@@ -20,12 +22,20 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+    const resRole = result.user.role as UserRole;
+
+    if(resRole !== role){
+      return NextResponse.json(
+        { error: `Role<${role}> not allowed in this endpoint.` },
+        { status: 401 }
+      );
+    }
 
     return NextResponse.json(
-      { 
-        user: result.user, 
+      {
+        user: result.user,
         token: result.token,
-        message: 'Login successful' 
+        message: 'Login successful'
       },
       { status: 200 }
     );
