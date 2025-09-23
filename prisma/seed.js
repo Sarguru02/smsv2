@@ -1,10 +1,12 @@
-import { prisma } from "@/lib/db/prisma";
-import bcrypt from "bcrypt";
-import { Env } from "@/lib/EnvVars";
+const { PrismaClient } = require('../src/generated/prisma/client');
+const bcrypt = require('bcrypt');
+
+const prisma = new PrismaClient();
+const Env = process.env;
 
 async function main() {
-  const username = Env.nodeEnv == "production" ? Env.seedUser as string : "devAdmin";
-  const password = Env.nodeEnv == "production" ? Env.seedPassword as string : "devPassword";
+  const username = Env.nodeEnv == "production" ? Env.seedUser: "devAdmin";
+  const password = Env.nodeEnv == "production" ? Env.seedPassword : "devPassword";
   const role = "ADMIN";
 
   const hashedPassword = await bcrypt.hash(password, 10);
