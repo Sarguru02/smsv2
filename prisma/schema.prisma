@@ -15,71 +15,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique     // could be rollNo for student or ID for teacher
-  password  String               // store hashed password
-  role      Role                 // STUDENT or TEACHER
-
-  studentId String?              // soft link to Student
-  teacherId String?              // soft link to Teacher
+  id        String @id
+  username  String @unique
+  password  String
+  role      String // "STUDENT" | "TEACHER" | "ADMIN" (enforced in app logic)
 
   createdAt DateTime
   updatedAt DateTime
 }
 
 model Student {
-  id        String   @id          // roll number (unique everywhere)
+  id        String @id
+  rollNo    String @unique
   name      String
-
-  // no relations, just pure data
-  createdAt DateTime
-  updatedAt DateTime
-}
-
-model Teacher {
-  id        String   @id          // teacher unique ID
-  name      String
-
-  createdAt DateTime
-  updatedAt DateTime
-}
-
-model Subject {
-  id        String   @id
-  name      String
-  code      String   @unique
-
-  createdAt DateTime
-  updatedAt DateTime
-}
-
-model Exam {
-  id        String   @id
-  name      String          // e.g., Cycle Test 1, Semester 1
-  type      ExamType        // CYCLE_TEST / SEMESTER
-  date      DateTime
+  class     String?
+  section   String?
 
   createdAt DateTime
   updatedAt DateTime
 }
 
 model Mark {
-  id        Int      @id @default(autoincrement())
-  studentId String              // references Student.id (soft link)
-  subjectId String              // references Subject.id (soft link)
-  examId    String              // references Exam.id (soft link)
-  score     Float
-
+  id        String   @id
+  studentId String   // link manually in app logic (not a foreign key)
+  examName  String   // e.g. "Cycle Test 1", "Semester Exam"
+  marks     Json     // { "math": 80, "english": 90, "science": 85 }
   createdAt DateTime
   updatedAt DateTime
-}
-
-enum Role {
-  STUDENT
-  TEACHER
-}
-
-enum ExamType {
-  CYCLE_TEST
-  SEMESTER
 }
