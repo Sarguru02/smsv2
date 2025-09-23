@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '../generated/prisma';
-
-const prisma = new PrismaClient();
+import { TeacherQueries} from '@/lib/db/teacher.queries';
+import { StudentQueries } from '@/lib/db/student.queries';
+import { UserQueries } from '@/lib/db/user.queries';
 
 export interface TokenPayload {
   userId: number;
@@ -37,30 +37,21 @@ export class AuthService {
 
   static async createUser(username: string, password: string, role: 'STUDENT' | 'TEACHER') {
     const hashedPassword = await this.hashPassword(password);
-    
-    return prisma.user.create({
-      data: {
-        username,
-        password: hashedPassword,
-        role,
-      },
-      select: {
-        id: true,
-        username: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+
+    switch (role){
+      case 'TEACHER': 
+        await TeacherQueries.createTeacher(username);
+        break;
+      case 'STUDENT':
+        await StudentQueries.createStudent(username);
+        break;
+    }
+
+    return UserQueries.createUser(username, hashedPassword, role);
   }
 
   static async authenticateUser(username: string, password: string) {
-    const user = await prisma.user.findUnique({
-      where: { username },
-      include: {
-        student: true,
-        teacher: true,
-      },
-    });
+    const user = await UserQueries.getUserByUsername(username);
 
     if (!user || !(await this.verifyPassword(password, user.password))) {
       return null;
@@ -69,8 +60,6 @@ export class AuthService {
     const tokenPayload: TokenPayload = {
       userId: user.id,
       role: user.role,
-      studentId: user.student?.id,
-      teacherId: user.teacher?.id,
     };
 
     return {
@@ -78,8 +67,6 @@ export class AuthService {
         id: user.id,
         username: user.username,
         role: user.role,
-        student: user.student,
-        teacher: user.teacher,
       },
       token: this.generateToken(tokenPayload),
     };
@@ -89,12 +76,6 @@ export class AuthService {
     const payload = this.verifyToken(token);
     if (!payload) return null;
 
-    return prisma.user.findUnique({
-      where: { id: payload.userId },
-      include: {
-        student: true,
-        teacher: true,
-      },
-    });
+    return UserQueries.getUserById(payload.userId);
   }
 }
