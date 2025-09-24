@@ -94,7 +94,7 @@ async function handler(req: NextRequest) {
   try {
     const body = await req.json();
     const { fileUrl, jobId } = csvProcessSchema.parse(body);
-    let totalRows = await processCsv(fileUrl, async (rows) => {
+    const totalRows = await processCsv(fileUrl, async (rows) => {
       await qstash.publishJSON({
         url: `${Env.apiHost}/api/batch/student/`,
         body: {

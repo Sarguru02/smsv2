@@ -24,8 +24,9 @@ async function handler(req: NextRequest) {
   const createUsersResult = await AuthService.createManyUsers(createUsersInput);
   
   const job = await JobQueries.getJobById(jobId);
+  const processedRows = job?.processedRows ?? 0;
 
-  if(job?.totalRows === job?.processedRows! + students.length){
+  if(job?.totalRows === processedRows + students.length){
     await JobQueries.updateStatus(jobId, "completed");
     await JobQueries.updateProcessedRows(jobId, students.length);
   }
