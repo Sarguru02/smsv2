@@ -30,7 +30,7 @@ npm run dev
 - [x] implement authentication for the api routes.
 - [ ] csv batch processor, generic to any endpoint. (upload student details, upload marks).
 **TEACHER**
-- [ ] implement upload student details route -> batch , single.
+- [x] implement upload student details route -> batch , single.
 - [ ] implement upload marks route
 - [x] list students route.
   - [x] pagination for this?

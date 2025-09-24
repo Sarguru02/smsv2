@@ -1,6 +1,7 @@
+import { StudentInput } from "../types";
 import { prisma } from "./prisma";
 
-async function createStudent(rollNo: string, name: string, className: string, section: string) {
+async function createStudent(rollNo: string, name: string, className: string, section: string, createdAt?: Date, updatedAt?: Date) {
   return prisma.student.create({
     data: {
       id: crypto.randomUUID(),
@@ -8,9 +9,23 @@ async function createStudent(rollNo: string, name: string, className: string, se
       name,
       class: className,
       section,
+      createdAt: createdAt ?? new Date(),
+      updatedAt: updatedAt ?? new Date()
+    }
+  })
+}
+
+async function createManyStudents(students: StudentInput[]){
+  return prisma.student.createMany({
+    data: students.map(s => ({
+      id: crypto.randomUUID(),
+      rollNo: s.rollNo,
+      name: s.name, 
+      class: s.className, 
+      section: s.section,
       createdAt: new Date(),
       updatedAt: new Date()
-    }
+    }))
   })
 }
 
@@ -104,6 +119,7 @@ async function findManyStudents(page: number = 1, limit: number = 10) {
 
 export const StudentQueries = {
   createStudent,
+  createManyStudents,
   findManyStudents,
   findManyStudentsByClass,
   findManyStudentsByClassAndSection,

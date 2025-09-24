@@ -37,6 +37,19 @@ export class AuthService {
     return UserQueries.createUser(username, hashedPassword, role);
   }
 
+  static async createManyUsers(users:{username: string, password: string, role:UserRole}[]) {
+    const pNewUsers = await Promise.all(users.map(async u => {
+      const hashedPassword = await this.hashPassword(u.password);
+      return {
+        username: u.username,
+        hashedPassword,
+        role: u.role
+      }
+    }))
+
+    return UserQueries.createManyUsers(pNewUsers);
+  }
+
   static async authenticateUser(username: string, password: string) {
     const user = await UserQueries.getUserByUsername(username);
 

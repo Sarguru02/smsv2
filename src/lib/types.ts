@@ -8,3 +8,12 @@ export const TokenPayloadSchema = z.object({
 });
 
 export type TokenPayload = z.infer<typeof TokenPayloadSchema>;
+
+export const StudentInputSchema = z.object({
+  rollNo: z.string().trim().min(1),
+  name: z.string().trim().min(1),
+  className: z.string().trim().min(1),
+  section: z.string().trim().min(1)
+})
+
+export type StudentInput = z.infer<typeof StudentInputSchema>
