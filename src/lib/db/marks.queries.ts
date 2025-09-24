@@ -45,10 +45,24 @@ async function deleteMarksById(id: string) {
   });
 }
 
+async function findExamsByStudent(studentId: string) {
+  return prisma.mark.findMany({
+    where: { studentId },
+    select: {
+      id: true,
+      examName: true,
+      marks: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "asc" },
+  });
+}
+
 export const MarksQueries = {
   createMarks,
   findMarksByStudent,
   findMarksByStudentAndExam,
   updateMarks,
   deleteMarksById,
+  findExamsByStudent,
 };

@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 
-async function createStudent(rollNo: string, name: string, className: string, section: string){
+async function createStudent(rollNo: string, name: string, className: string, section: string) {
   return prisma.student.create({
     data: {
       id: crypto.randomUUID(),
@@ -14,30 +14,64 @@ async function createStudent(rollNo: string, name: string, className: string, se
   })
 }
 
-async function findManyStudentsByClass(className: string) {
-  return prisma.student.findMany({
-    where: { class: className },
-    orderBy: { rollNo: "asc" }, // optional
-  });
+async function findManyStudentsByClass(className: string, page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+  
+  const [students, total] = await Promise.all([
+    prisma.student.findMany({
+      where: { class: className },
+      orderBy: { rollNo: "asc" },
+      skip,
+      take: limit,
+    }),
+    prisma.student.count({ where: { class: className } }),
+  ]);
+  
+  return {
+    students,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
-async function findManyStudentsByClassAndSection( className: string, section: string){
-  return prisma.student.findMany({
+async function findManyStudentsByClassAndSection(className: string, section: string, page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+  
+  const [students, total] = await Promise.all([
+    prisma.student.findMany({
+      where: {
+        class: className,
+        section,
+      },
+      orderBy: { rollNo: "asc" },
+      skip,
+      take: limit,
+    }),
+    prisma.student.count({ where: { class: className, section } }),
+  ]);
+  
+  return {
+    students,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+async function deleteManyStudentsById(ids: string[]) {
+  return prisma.student.deleteMany({
     where: {
-      class: className,
-      section,
+      id: {
+        in: ids,
+      },
     },
-    orderBy: { rollNo: "asc" },
   });
 }
 
-async function deleteStudentById(id: string) {
-  return prisma.student.delete({
-    where: { id },
-  });
-}
-
-async function updateStudent( id: string, data: { rollNo?: string; name?: string; class?: string; section?: string; }) {
+async function updateStudent(id: string, data: { rollNo?: string; name?: string; class?: string; section?: string; }) {
   return prisma.student.update({
     where: { id },
     data: {
@@ -47,10 +81,32 @@ async function updateStudent( id: string, data: { rollNo?: string; name?: string
   });
 }
 
+async function findManyStudents(page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+  
+  const [students, total] = await Promise.all([
+    prisma.student.findMany({
+      orderBy: { rollNo: "asc" },
+      skip,
+      take: limit,
+    }),
+    prisma.student.count(),
+  ]);
+  
+  return {
+    students,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
 export const StudentQueries = {
   createStudent,
+  findManyStudents,
   findManyStudentsByClass,
   findManyStudentsByClassAndSection,
-  deleteStudentById,
-  updateStudent
+  updateStudent,
+  deleteManyStudentsById,
 }

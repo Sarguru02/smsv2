@@ -2,12 +2,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserQueries, UserRole } from '@/lib/db/user.queries';
 import { Env } from '@/lib/EnvVars';
+import { NextRequest, NextResponse } from 'next/server';
+import { AppError, ForbiddenError, UnauthorizedError } from './errors';
 
 export interface TokenPayload {
   userId: string;
   role: UserRole;
-  studentId?: number;
-  teacherId?: number;
 }
 
 export class AuthService {
@@ -67,4 +67,42 @@ export class AuthService {
 
     return UserQueries.getUserById(payload.userId);
   }
+
+}
+
+// Auth Handler
+export function withAuth<C extends { params?: Promise<unknown> } = object>(
+  allowedRoles: UserRole[] = [],
+  handler: (
+    req: NextRequest,
+    user?: { id: string; username: string; role: UserRole; createdAt: Date },
+    context?: C
+  ) => Promise<NextResponse>
+) {
+  return async (req: NextRequest, context?: C) => {
+    try {
+      const authHeader = req.headers.get("authorization");
+      if (!authHeader?.startsWith("Bearer ")) {
+        throw new UnauthorizedError("Missing authorization header");
+      }
+
+      const token = authHeader.split(" ")[1];
+      const user = await AuthService.getUserFromToken(token);
+
+      if (!user) throw new UnauthorizedError("Token expired.");
+      if (allowedRoles.length && !allowedRoles.includes(user.role as UserRole)) {
+        throw new ForbiddenError("You do not have permission");
+      }
+
+      return handler(req, { ...user, role: user.role as UserRole }, context);
+    } catch (err) {
+      if (err instanceof AppError) {
+        return NextResponse.json(
+          { error: err.message, details: err.details },
+          { status: err.statusCode }
+        );
+      }
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+  };
 }
