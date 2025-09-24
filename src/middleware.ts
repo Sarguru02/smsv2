@@ -4,6 +4,15 @@ import { jwtVerify } from "jose";
 import { TokenPayloadSchema } from './lib/types';
 
 const secret = new TextEncoder().encode(Env.jwtSecret);
+// Routes that should bypass JWT auth
+const PUBLIC_ROUTES = [
+  /^\/api\/auth(\/.*)?$/,  // all auth routes
+  /^\/api\/batch(\/.*)?$/, // all qstash worker routes
+];
+
+function isPublicRoute(path: string) {
+  return PUBLIC_ROUTES.some((regex) => regex.test(path));
+}
 
 export async function verifyToken(token: string) {
   try {
@@ -23,8 +32,9 @@ export async function verifyToken(token: string) {
 export async function middleware(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+  const path = request.nextUrl.pathname;
 
-  if (request.nextUrl.pathname.startsWith('/api/auth')) {
+  if (isPublicRoute(path)) {
     return NextResponse.next();
   }
 
