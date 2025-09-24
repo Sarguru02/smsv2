@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { StudentQueries } from "@/lib/db/student.queries";
 import { z } from "zod";
 import { StudentInputSchema } from "@/lib/types";
-import { UserQueries } from "@/lib/db/user.queries";
 import { InternalError } from "@/lib/errors";
 
 const deleteStudentSchema = z.object({
