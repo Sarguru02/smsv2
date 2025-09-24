@@ -37,9 +37,22 @@ model Student {
 
 model Mark {
   id        String   @id
-  studentId String   // link manually in app logic (not a foreign key)
+  studentId String   // link manually in app logic (not a foreign key) -> linking with rollNo
   examName  String   // e.g. "Cycle Test 1", "Semester Exam"
   marks     Json     // { "math": 80, "english": 90, "science": 85 }
+
   createdAt DateTime
   updatedAt DateTime
+}
+
+// for the batch processor
+model Job {
+  id            String   @id @default(cuid())
+  fileUrl       String
+  totalRows     Int      @default(0)
+  processedRows Int      @default(0)
+  status        String   @default("pending") // pending, processing, done, failed
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

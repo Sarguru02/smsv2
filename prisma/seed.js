@@ -13,6 +13,7 @@ async function main() {
 
   // check if user already exists
   const existing = await prisma.user.findUnique({ where: { username } });
+
   if (!existing) {
     await prisma.user.create({
       data: {
