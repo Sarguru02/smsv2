@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import { Env } from '@/lib/EnvVars';
+import { jwtVerify } from "jose";
+import { TokenPayloadSchema } from './lib/types';
 
-interface TokenPayload {
-  userId: number;
-  role: 'STUDENT' | 'TEACHER';
-  studentId?: number;
-  teacherId?: number;
-}
+const secret = new TextEncoder().encode(Env.jwtSecret);
 
-function verifyToken(token: string): TokenPayload | null {
+export async function verifyToken(token: string) {
   try {
-    return jwt.verify(token, Env.jwtSecret) as TokenPayload;
-  } catch {
+    const { payload } = await jwtVerify(token, secret);
+    const parsed = TokenPayloadSchema.safeParse(payload);
+    if (!parsed.success) {
+      console.error("Invalid JWT payload:", parsed.error);
+      return null;
+    }
+    return parsed.data;
+  } catch (err) {
+    console.log(err);
     return null;
   }
 }
@@ -33,7 +36,8 @@ export async function middleware(request: NextRequest) {
       );
     }
 
-    const payload = verifyToken(token);
+
+    const payload = await verifyToken(token);
     if (!payload) {
       return NextResponse.json(
         { error: 'Invalid token' },
@@ -44,8 +48,6 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set('x-user-id', payload.userId.toString());
     requestHeaders.set('x-user-role', payload.role);
-    if (payload.studentId) requestHeaders.set('x-student-id', payload.studentId.toString());
-    if (payload.teacherId) requestHeaders.set('x-teacher-id', payload.teacherId.toString());
 
     return NextResponse.next({
       request: {

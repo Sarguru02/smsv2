@@ -1,14 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserQueries, UserRole } from '@/lib/db/user.queries';
+import { UserQueries } from '@/lib/db/user.queries';
 import { Env } from '@/lib/EnvVars';
 import { NextRequest, NextResponse } from 'next/server';
 import { AppError, ForbiddenError, UnauthorizedError } from './errors';
+import { TokenPayload, UserRole } from './types';
 
-export interface TokenPayload {
-  userId: string;
-  role: UserRole;
-}
 
 export class AuthService {
   private static readonly JWT_SECRET = Env.jwtSecret;
@@ -23,6 +20,7 @@ export class AuthService {
   }
 
   static generateToken(payload: TokenPayload): string {
+    console.log(this.JWT_SECRET)
     return jwt.sign(payload, this.JWT_SECRET, { expiresIn: '7d' });
   }
 
@@ -85,6 +83,9 @@ export function withAuth<C extends { params?: Promise<unknown> } = object>(
       if (!authHeader?.startsWith("Bearer ")) {
         throw new UnauthorizedError("Missing authorization header");
       }
+
+      // giving access for every routes to admin
+      allowedRoles.push('ADMIN');
 
       const token = authHeader.split(" ")[1];
       const user = await AuthService.getUserFromToken(token);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from '@/lib/auth';
 import { z } from 'zod';
-import { UserRole } from '@/lib/db/user.queries';
+import { UserRole } from '@/lib/types';
 
 const loginSchema = z.object({
   username: z.string().min(1),

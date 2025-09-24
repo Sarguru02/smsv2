@@ -1,6 +1,6 @@
+import { UserRole } from "../types";
 import { prisma } from "./prisma";
 
-export type UserRole = "STUDENT" | "TEACHER" | "ADMIN";
 
 export type User = {
   id: string;
