@@ -110,6 +110,7 @@ async function handler(req: NextRequest) {
       message: "Processed the csv file, now creating students"
     })
   } catch (err) {
+    console.error("Error occurred", err);
     if (err instanceof AppError) {
       return NextResponse.json(
         { error: err.message, details: err.details },

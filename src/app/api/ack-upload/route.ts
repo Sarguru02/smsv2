@@ -8,6 +8,7 @@ const ackUploadSchema = z.object({
   fileUrl: z.string().min(1),
   endpoint: z.url()
 })
+
 export const POST = withAuth(['TEACHER'], async (req) => {
   const body = await req.json();
   const { fileUrl, endpoint } = ackUploadSchema.parse(body);
