@@ -96,6 +96,12 @@ async function updateStudent(id: string, data: { rollNo?: string; name?: string;
   });
 }
 
+async function findStudentByRollNo(rollNo: string){
+  return prisma.student.findUnique({
+    where: { rollNo }
+  })
+}
+
 async function findManyStudents(page: number = 1, limit: number = 10) {
   const skip = (page - 1) * limit;
   
@@ -120,6 +126,7 @@ async function findManyStudents(page: number = 1, limit: number = 10) {
 export const StudentQueries = {
   createStudent,
   createManyStudents,
+  findStudentByRollNo,
   findManyStudents,
   findManyStudentsByClass,
   findManyStudentsByClassAndSection,
