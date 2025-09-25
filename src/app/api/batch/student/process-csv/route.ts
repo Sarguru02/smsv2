@@ -4,19 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 import type { ReadableStream as NodeReadableStream } from "stream/web";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
-import { z } from "zod";
 import { qstash } from "@/lib/qstash";
 import { Env } from "@/lib/EnvVars";
-import { StudentInput } from "@/lib/types";
+import { csvProcessSchema, Row, StudentInput } from "@/lib/types";
 import { AppError, BadRequestError } from "@/lib/errors";
 import { JobQueries } from "@/lib/db/job.queries";
-
-type Row = Record<string, string>;
-
-const csvProcessSchema = z.object({
-  fileUrl: z.string().min(1),
-  jobId: z.string().min(1)
-})
 
 async function readableFromWebStream(stream: NodeReadableStream) {
   return Readable.fromWeb(stream);

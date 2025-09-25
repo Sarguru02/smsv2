@@ -17,3 +17,18 @@ export const StudentInputSchema = z.object({
 })
 
 export type StudentInput = z.infer<typeof StudentInputSchema>
+
+export const MarkInputSchema = z.object({
+  rollNo: z.string().min(1),
+  examName: z.string().min(1),
+  marks: z.record(z.string(), z.coerce.number())
+})
+
+export type MarkInput = z.infer<typeof MarkInputSchema>
+
+export type Row = Record<string, string>;
+
+export const csvProcessSchema = z.object({
+  fileUrl: z.string().min(1),
+  jobId: z.string().min(1)
+})

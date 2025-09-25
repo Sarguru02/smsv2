@@ -1,16 +1,30 @@
+import { MarkInput } from "../types";
 import { prisma } from "./prisma";
 
-async function createMarks(studentId: string, examName: string, marks: Record<string, number>) {
+async function createMarks(rollNo: string, examName: string, marks: Record<string, number>) {
   return prisma.mark.create({
     data: {
       id: crypto.randomUUID(),
-      studentId,
+      studentId: rollNo,
       examName,
       marks,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   });
+}
+
+async function createManyMarks(markRows: MarkInput[]) {
+  return prisma.mark.createMany({
+    data: markRows.map(m => ({
+      id: crypto.randomUUID(),
+      studentId: m.rollNo,
+      examName: m.examName,
+      marks: m.marks,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }))
+  })
 }
 
 async function findMarksByStudent(studentId: string) {
@@ -60,6 +74,7 @@ async function findExamsByStudent(studentId: string) {
 
 export const MarksQueries = {
   createMarks,
+  createManyMarks,
   findMarksByStudent,
   findMarksByStudentAndExam,
   updateMarks,
