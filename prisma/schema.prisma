@@ -51,7 +51,8 @@ model Job {
   fileUrl       String
   totalRows     Int      @default(0)
   processedRows Int      @default(0)
-  status        String   @default("pending") // pending, processing, done, failed
+  status        String   @default("pending") // pending, processing, completed, failed
+  errorStatus   Json?    // error details if job failed
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

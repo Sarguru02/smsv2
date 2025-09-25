@@ -46,10 +46,21 @@ async function updateStatus(jobId: string, status: string) {
   })
 }
 
+async function updateStatusWithError(jobId: string, status: string, errorStatus: object) {
+  return prisma.job.update({
+    where: { id: jobId },
+    data: {
+      status,
+      errorStatus
+    }
+  })
+}
+
 export const JobQueries = {
   createJob,
   getJobById,
   updateTotalRows,
   updateProcessedRows,
-  updateStatus
+  updateStatus,
+  updateStatusWithError
 }

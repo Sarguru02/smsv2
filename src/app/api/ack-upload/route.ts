@@ -20,7 +20,8 @@ export const POST = withAuth(['TEACHER'], async (req) => {
     body: {
       fileUrl,
       jobId,
-    }
+    },
+    retries: 0
   })
 
   return NextResponse.json({

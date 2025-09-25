@@ -83,16 +83,21 @@ async function processCsv(
 }
 
 async function handler(req: NextRequest) {
+  let jobId: string | undefined;
+  
   try {
     const body = await req.json();
-    const { fileUrl, jobId } = csvProcessSchema.parse(body);
+    const { fileUrl, jobId: parsedJobId } = csvProcessSchema.parse(body);
+    jobId = parsedJobId;
+    
     const totalRows = await processCsv(fileUrl, async (rows) => {
       await qstash.publishJSON({
         url: `${Env.apiHost}/api/batch/student/`,
         body: {
           jobId,
-          students: rows
-        }
+          students: rows,
+        },
+        retries: 0
       });
     })
 
@@ -102,7 +107,18 @@ async function handler(req: NextRequest) {
       message: "Processed the csv file, now creating students"
     })
   } catch (err) {
-    console.error("Error occurred", err);
+    console.error("Error occurred in student CSV processing:", err);
+    
+    if (jobId) {
+      const errorDetails = {
+        message: err instanceof Error ? err.message : "Unknown error occurred during student CSV processing",
+        stack: err instanceof Error ? err.stack : undefined,
+        timestamp: new Date().toISOString(),
+        context: "student_csv_processing"
+      };
+      await JobQueries.updateStatusWithError(jobId, "failed", errorDetails);
+    }
+    
     if (err instanceof AppError) {
       return NextResponse.json(
         { error: err.message, details: err.details },
