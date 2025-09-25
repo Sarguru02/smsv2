@@ -56,6 +56,27 @@ async function getUserByUsername(username: string) {
   });
 }
 
+async function getUsersByRole(role: string, page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+
+  const [teachers, total] = await Promise.all([
+    prisma.user.findMany({
+      where: { role },
+      orderBy: { username: "asc" },
+      skip,
+      take: limit
+    }),
+    prisma.user.count({ where: { role } })
+  ])
+  return {
+    teachers,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit)
+  }
+}
+
 async function getUserById(id: string): Promise<User | null> {
   return prisma.user.findUnique({
     where: { id },
@@ -68,9 +89,39 @@ async function getUserById(id: string): Promise<User | null> {
   });
 }
 
+async function deleteManyUsersById(ids: string[]) {
+  return prisma.user.deleteMany({
+    where: {
+      id: {
+        in: ids,
+      }
+    }
+  })
+}
+
+async function updateUser(id: string, username: string){
+  return prisma.user.update({
+    where: {id},
+    data: {
+      username,
+      updatedAt: new Date()
+    },
+    select: {
+      id: true,
+      username: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true
+    }
+  })
+}
+
 export const UserQueries = {
   createUser,
   createManyUsers,
   getUserByUsername,
   getUserById,
+  getUsersByRole,
+  updateUser,
+  deleteManyUsersById
 }

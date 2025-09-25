@@ -33,21 +33,21 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] create the schema for marks, and queries -> to store and retrieve the marks
 - [x] api routes -> /api/auth/login, /api/auth/logout, /api/auth/me
 - [x] implement authentication for the api routes.
-- [ ] csv batch processor -> upload Marks
+- [x] csv batch processor -> upload Marks
 - [x] csv batch processor -> upload students
 
 **ADMIN(All these should be secret frontend routes)**
-- [ ] create teacher route.
-- [ ] delete teacher.
-- [ ] edit teacher.
-- [ ] show all teachers.
+- [x] create teacher route.
+- [x] delete teacher.
+- [x] edit teacher.
+- [x] show all teachers.
 
 **TEACHER**
 - [x] implement upload student details route -> batch , single.
-- [ ] implement upload marks route -> batch, single
+- [x] implement upload marks route -> batch, single
 - [x] list students route.
   - [x] pagination for this?
-- [ ] edit student route.
+- [x] edit student route.
 - [x] delete single student route.
 - [x] delete multiple students route.
 
