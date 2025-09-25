@@ -37,6 +37,15 @@ async function updateProcessedRows(jobId: string, incProcessedRows: number) {
   })
 }
 
+async function updateProcessedRowIds(jobId: string, processedRowIds: string[]) {
+  return prisma.job.update({
+    where: { id: jobId },
+    data: {
+      processedRowIds
+    }
+  })
+}
+
 async function updateStatus(jobId: string, status: string) {
   return prisma.job.update({
     where: { id: jobId },
@@ -61,6 +70,7 @@ export const JobQueries = {
   getJobById,
   updateTotalRows,
   updateProcessedRows,
+  updateProcessedRowIds,
   updateStatus,
   updateStatusWithError
 }

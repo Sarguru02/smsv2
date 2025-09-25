@@ -28,8 +28,10 @@ async function handler(req: NextRequest) {
     const processedRows = job?.processedRows ?? 0;
 
     if(job?.totalRows === processedRows + students.length){
+      const processedRowIds = students.map(s => s.rollNo);
       await JobQueries.updateStatus(jobId, "completed");
       await JobQueries.updateProcessedRows(jobId, students.length);
+      await JobQueries.updateProcessedRowIds(jobId, processedRowIds);
     }
 
     return NextResponse.json({
