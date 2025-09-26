@@ -35,6 +35,7 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] implement authentication for the api routes.
 - [x] csv batch processor -> upload Marks
 - [x] csv batch processor -> upload students
+- [ ] search functionality for listview ???
 
 **ADMIN(All these should be secret frontend routes)**
 - [x] create teacher route.
@@ -57,10 +58,12 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 
 ### FRONTEND
 
-- [x] Landing page -> role selection, theme toggle.
-- [x] Teacher login page.
-- [x] Student login page.
-- [ ] Teacher Dashboard.
+- [x] Landing page -> Sample content, login button, theme toggle.
+- [x] Change login page -> only have username and password, not go to separate teacher or student contexts.
+- [x] Have only one dashboard route, but have multiple stuffs like teacherDashboard.tsx, studentDashboard.tsx.
+        After logging in, u will get the role from the backend. Use that role to choose which dashboard to show.
+- [x] Have sidebar, which has items based on roles. Have a cental config for that, and choose the items to show for each role.
+- [x] Teacher Dashboard.
   - [ ] List students view. #BACKEND_DONE
     - [ ] pagination -> 10 students per page. (query when going to that page).
   - [ ] Upload student marks. -> single or batch. #BACKEND_DEPENDENCY

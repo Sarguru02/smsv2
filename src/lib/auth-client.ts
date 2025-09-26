@@ -38,7 +38,7 @@ export class AuthClient {
     });
   }
 
-  static async login(username: string, password: string): Promise<{ success: boolean; error?: string }> {
+  static async login(username: string, password: string): Promise<{ success: boolean; error?: string; user?: {id: string, username: string, role: string} }> {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -52,7 +52,7 @@ export class AuthClient {
 
       if (response.ok) {
         this.setToken(data.token);
-        return { success: true };
+        return { success: true, user: data.user };
       } else {
         return { success: false, error: data.error || 'Login failed' };
       }
