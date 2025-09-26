@@ -3,11 +3,10 @@ import {
   Home, 
   Users, 
   GraduationCap, 
-  BarChart3, 
-  Settings,
   User,
-  BookOpen,
-  type LucideIcon
+  type LucideIcon,
+  UploadIcon,
+  Book
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -34,18 +33,32 @@ export const navigationConfig: NavigationItem[] = [
     description: 'Manage student records'
   },
   {
+    label: 'Batch Student Upload',
+    href: '/dashboard/students/upload',
+    icon: UploadIcon,
+    roles: ['TEACHER', 'ADMIN'],
+    description: 'Batch upload student details'
+  },
+  {
+    label: 'Batch Marks Upload',
+    href: '/dashboard/exams/upload',
+    icon: UploadIcon,
+    roles: ['TEACHER', 'ADMIN'],
+    description: 'Batch upload student details'
+  },
+  {
+    label: 'Exams',
+    href: '/dashboard/exams',
+    icon: Book,
+    roles: ['STUDENT','TEACHER', 'ADMIN'],
+    description: 'See Exams'
+  },
+  {
     label: 'Teachers',
     href: '/dashboard/teachers',
     icon: Users,
     roles: ['ADMIN'],
     description: 'Manage teaching staff'
-  },
-  {
-    label: 'My Classes',
-    href: '/dashboard/classes',
-    icon: BookOpen,
-    roles: ['TEACHER'],
-    description: 'View assigned classes'
   },
   {
     label: 'My Profile',
@@ -54,20 +67,6 @@ export const navigationConfig: NavigationItem[] = [
     roles: ['STUDENT'],
     description: 'View academic progress'
   },
-  {
-    label: 'Reports',
-    href: '/dashboard/reports',
-    icon: BarChart3,
-    roles: ['TEACHER', 'ADMIN'],
-    description: 'Academic reports and analytics'
-  },
-  {
-    label: 'Settings',
-    href: '/dashboard/settings',
-    icon: Settings,
-    roles: ['ADMIN'],
-    description: 'System configuration'
-  }
 ];
 
 export function getNavigationItems(userRole: UserRole): NavigationItem[] {

@@ -25,7 +25,16 @@ export const GET = withAuth(['TEACHER'], async (req) => {
 
   const result = await StudentQueries.findManyStudents(page, limit);
 
-  return NextResponse.json(result);
+  // Restructure to match component expectations
+  return NextResponse.json({
+    students: result.students,
+    pagination: {
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      totalPages: result.totalPages
+    }
+  });
 })
 
 export const DELETE = withAuth(['TEACHER'], async (req) => {
