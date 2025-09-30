@@ -1,4 +1,3 @@
-import { withAuth } from '@/lib/auth';
 import { JobQueries } from '@/lib/db/job.queries';
 import { qstash } from '@/lib/qstash';
 import { BatchUploadType } from '@/lib/types';
@@ -14,7 +13,7 @@ const tokenPayloadSchema = z.object({
   fileName: z.string().min(1)
 })
 
-export const POST = withAuth(['TEACHER'], async (req: NextRequest) => {
+export const POST = async (req: NextRequest) => {
 
   const body = (await req.json()) as HandleUploadBody;
 
@@ -70,4 +69,4 @@ export const POST = withAuth(['TEACHER'], async (req: NextRequest) => {
       { status: 400 }, // The webhook will retry 5 times waiting for a 200
     );
   }
-})
+}

@@ -5,7 +5,6 @@ import {
   GraduationCap, 
   User,
   type LucideIcon,
-  UploadIcon,
   Book
 } from 'lucide-react';
 
