@@ -38,6 +38,7 @@ async function processCsv(
   chunkSize = 150
 ) {
   const signedUrl = getDownloadUrl(blobUrl);
+  console.log("url to fetch brother:", signedUrl);
   let validated = false;
   let rowCount = 0;
 
