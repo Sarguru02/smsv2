@@ -9,6 +9,7 @@ import BatchUploadDialog from '@/components/dialogs/batch-upload-dialog';
 import { UploadIcon } from 'lucide-react';
 import { type NavigationItem } from '@/lib/navigation';
 import { useRouter } from 'next/navigation';
+import { Env } from '@/lib/EnvVars';
 
 export default function DashboardLayout({
   children,
@@ -47,53 +48,53 @@ export default function DashboardLayout({
     <AuthProvider>
       <AuthGuard>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <DashboardSidebar 
+          <DashboardSidebar
             isMobileOpen={isMobileOpen}
             setIsMobileOpen={setIsMobileOpen}
             actionItems={actionItems}
           />
-          
+
           <div className="lg:pl-64">
             <DashboardHeader setIsMobileOpen={setIsMobileOpen} />
             <main className="p-4 lg:p-6">
               {children}
             </main>
           </div>
-          
+
           {/* Batch Upload Dialogs */}
           <BatchUploadDialog
             title="Batch Upload Students"
             description="Upload a CSV file to add multiple students at once"
             type="STUDENT_UPLOAD"
-            processEndpoint="/api/batch/student/process-csv"
-            sampleCSV={{
-              headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
-              sampleData: [
-                ["2023001", "John Doe", "10", "A"],
-                ["2023002", "Jane Smith", "10", "B"],
-                ["2023003", "Bob Johnson", "11", "A"]
-              ],
-              filename: "student_upload_sample.csv"
-            }}
-            formatRequirements={{
-              title: "CSV Format Requirements",
-              requirements: [
-                "Headers: ROLL NO, NAME, CLASS, SECTION",
-                "Each row should contain student data",
-                "No empty rows or columns",
-                "Save as CSV format"
-              ]
-            }}
-            open={studentsDialogOpen}
-            onOpenChange={setStudentsDialogOpen}
-            onUploadComplete={handleBatchUploadComplete}
+            processEndpoint={Env.apiHost + "/api/batch/student/process-csv" }
+          sampleCSV={{
+            headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
+            sampleData: [
+              ["2023001", "John Doe", "10", "A"],
+              ["2023002", "Jane Smith", "10", "B"],
+              ["2023003", "Bob Johnson", "11", "A"]
+            ],
+            filename: "student_upload_sample.csv"
+          }}
+          formatRequirements={{
+            title: "CSV Format Requirements",
+            requirements: [
+              "Headers: ROLL NO, NAME, CLASS, SECTION",
+              "Each row should contain student data",
+              "No empty rows or columns",
+              "Save as CSV format"
+            ]
+          }}
+          open={studentsDialogOpen}
+          onOpenChange={setStudentsDialogOpen}
+          onUploadComplete={handleBatchUploadComplete}
           />
-          
+
           <BatchUploadDialog
             title="Batch Upload Marks"
             description="Upload a CSV file to add multiple student marks at once"
             type="MARKS_UPLOAD"
-            processEndpoint="/api/batch/marks/process-csv"
+            processEndpoint={Env.apiHost + "/api/batch/marks/process-csv"}
             sampleCSV={{
               headers: ["ROLL NO", "SUBJECT", "MARKS", "MAX_MARKS"],
               sampleData: [

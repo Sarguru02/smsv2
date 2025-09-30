@@ -118,7 +118,7 @@ export default function BatchUploadDialog({
         clientPayload: JSON.stringify({
           type: type,
           jobId,
-          processEndpoint: processEndpoint,
+          processEndpoint,
           fileName,
           userId: user?.id,
         }),
