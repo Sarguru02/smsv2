@@ -1,33 +1,5 @@
-import { StudentInput } from "../types";
 import { prisma } from "./prisma";
 
-async function createStudent(rollNo: string, name: string, className: string, section: string, createdAt?: Date, updatedAt?: Date) {
-  return prisma.student.create({
-    data: {
-      id: crypto.randomUUID(),
-      rollNo,
-      name,
-      class: className,
-      section,
-      createdAt: createdAt ?? new Date(),
-      updatedAt: updatedAt ?? new Date()
-    }
-  })
-}
-
-async function createManyStudents(students: StudentInput[]){
-  return prisma.student.createMany({
-    data: students.map(s => ({
-      id: crypto.randomUUID(),
-      rollNo: s.rollNo,
-      name: s.name, 
-      class: s.className, 
-      section: s.section,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }))
-  })
-}
 
 async function findManyStudentsByClass(className: string, page: number = 1, limit: number = 10) {
   const skip = (page - 1) * limit;
@@ -76,11 +48,11 @@ async function findManyStudentsByClassAndSection(className: string, section: str
   };
 }
 
-async function deleteManyStudentsById(ids: string[]) {
+async function deleteManyStudentsByRollNo(rollNos: string[]) {
   return prisma.student.deleteMany({
     where: {
-      id: {
-        in: ids,
+      rollNo: {
+        in: rollNos,
       },
     },
   });
@@ -124,12 +96,10 @@ async function findManyStudents(page: number = 1, limit: number = 10) {
 }
 
 export const StudentQueries = {
-  createStudent,
-  createManyStudents,
   findStudentByRollNo,
   findManyStudents,
   findManyStudentsByClass,
   findManyStudentsByClassAndSection,
   updateStudent,
-  deleteManyStudentsById,
+  deleteManyStudentsByRollNo,
 }

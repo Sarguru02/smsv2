@@ -1,10 +1,9 @@
-import { AuthService, withAuth } from "@/lib/auth";
+import { withAuth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { StudentQueries } from "@/lib/db/student.queries";
 import { z } from "zod";
 import { StudentInputSchema } from "@/lib/types";
-import { InternalError } from "@/lib/errors";
-import { UserQueries } from "@/lib/db/user.queries";
+import { createStudentWithUser, deleteStudentWithUser, updateStudentWithUser } from "@/services/student.service";
 
 const updateStudentSchema = z.object({
   id: z.string(),
@@ -15,7 +14,7 @@ const updateStudentSchema = z.object({
 });
 
 const deleteStudentSchema = z.object({
-  ids: z.string().array()
+  rollNos: z.string().array(),
 })
 
 export const GET = withAuth(['TEACHER'], async (req) => {
@@ -39,14 +38,11 @@ export const GET = withAuth(['TEACHER'], async (req) => {
 
 export const DELETE = withAuth(['TEACHER'], async (req) => {
   const body = await req.json();
-  const { ids } = deleteStudentSchema.parse(body);
-  const sresult = await StudentQueries.deleteManyStudentsById(ids);
-  console.info(`Deleted ${sresult.count} students`);
-  const uresult = await UserQueries.deleteManyUsersById(ids);
+  const { rollNos } = deleteStudentSchema.parse(body);
+  const uresult = await deleteStudentWithUser(rollNos);
   return NextResponse.json({
     success: true,
-    deletedCount: uresult.count,
-    message: `Successfully deleted ${uresult.count} students`
+    message: `Successfully deleted ${uresult.userDelete} students`
   });
 })
 
@@ -54,33 +50,24 @@ export const POST = withAuth(["TEACHER"], async (req) => {
   const body = await req.json();
   const { name, rollNo, className, section } = StudentInputSchema.parse(body);
 
-  const createStudentResult = await StudentQueries.createStudent(name, rollNo, className, section);
 
-  const createUserResult = await AuthService.createUser(rollNo, rollNo, 'STUDENT');
-
-  if (!createUserResult) {
-    throw new InternalError("User not created.", { username: name, password: rollNo });
-  }
+  const createStudentResult = await createStudentWithUser(name, rollNo, className, section);
 
   return NextResponse.json({
     success: true,
-    message: `Inserted ${createStudentResult.name} into db. Username: ${createUserResult.username}`,
-    res: createStudentResult
+    message: `Inserted ${createStudentResult.student.name} into db. Username: ${createStudentResult.user.username}`,
   })
 })
 
 export const PUT = withAuth(["TEACHER"], async (req) => {
   const body = await req.json();
-  const {id, ...data} = updateStudentSchema.parse(body);
+  const { id, className, ...data } = updateStudentSchema.parse(body);
+  console.log("Student id: ", id);
 
-  const updatedStudent = await StudentQueries.updateStudent(id, data); 
-
-  if(data.rollNo){
-    await UserQueries.updateUser(id, data.rollNo);
-  }
+  const updatedStudent = await updateStudentWithUser(id, { className, ...data });
 
   return NextResponse.json({
-    success: true, 
+    success: true,
     res: updatedStudent
   })
 })

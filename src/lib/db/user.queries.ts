@@ -89,21 +89,23 @@ async function getUserById(id: string): Promise<User | null> {
   });
 }
 
-async function deleteManyUsersById(ids: string[]) {
+async function deleteManyUsersByUsername(usernames: string[]) {
   return prisma.user.deleteMany({
     where: {
-      id: {
-        in: ids,
+      username: {
+        in: usernames,
       }
     }
   })
 }
 
-async function updateUser(id: string, username: string){
+async function updateUser(oldUsername: string, newUsername: string) {
   return prisma.user.update({
-    where: {id},
+    where: {
+      username: oldUsername
+    },
     data: {
-      username,
+      username: newUsername,
       updatedAt: new Date()
     },
     select: {
@@ -116,6 +118,16 @@ async function updateUser(id: string, username: string){
   })
 }
 
+async function deleteManyUsersById(ids: string[]) {
+  return prisma.user.deleteMany({
+    where: {
+      id: {
+        in: ids
+      }
+    }
+  })
+}
+
 export const UserQueries = {
   createUser,
   createManyUsers,
@@ -123,5 +135,6 @@ export const UserQueries = {
   getUserById,
   getUsersByRole,
   updateUser,
+  deleteManyUsersByUsername,
   deleteManyUsersById
 }

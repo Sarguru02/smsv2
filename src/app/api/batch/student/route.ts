@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
-import { StudentInputSchema, UserRole } from "@/lib/types";
+import { StudentInputSchema } from "@/lib/types";
 import { z } from "zod";
-import { StudentQueries } from "@/lib/db/student.queries";
-import { AuthService } from "@/lib/auth";
 import { JobQueries } from "@/lib/db/job.queries";
+import { createManyStudentsWithUsers } from "@/services/batchStudent.service";
+import { updateProcessedRowsWithIds } from "@/services/job.service";
 
 const studentBatchUploadSchema = z.object({
   jobId: z.string().min(1),
@@ -15,36 +15,20 @@ async function handler(req: NextRequest) {
     const body = await req.json();
     const { jobId, students } = studentBatchUploadSchema.parse(body);
 
-    const createStudentsResult = await StudentQueries.createManyStudents(students);
-
-    const createUsersInput = students.map(s => ({
-      username: s.rollNo,
-      password: s.rollNo,
-      role: "STUDENT" as UserRole
-    }))
-    const createUsersResult = await AuthService.createManyUsers(createUsersInput);
-    
-    const job = await JobQueries.getJobById(jobId);
-    const processedRows = job?.processedRows ?? 0;
-
-    if(job?.totalRows === processedRows + students.length){
-      const processedRowIds = students.map(s => s.rollNo);
-      const job = await JobQueries.updateStatus(jobId, "completed");
-      await JobQueries.updateProcessedRows(jobId, students.length);
-      await JobQueries.updateProcessedRowIds(jobId, [...job?.processedRowIds as string[], ...processedRowIds]);
-    }
+    const createStudentsResult = await createManyStudentsWithUsers(students);
+    await updateProcessedRowsWithIds(jobId, students.length, students.map(s => s.rollNo));
 
     return NextResponse.json({
-      success: true, 
-      message: `Inserted ${createStudentsResult.count} students, and ${createUsersResult.count} users.`,
+      success: true,
+      message: `Inserted ${createStudentsResult.studentsInserted} students, and ${createStudentsResult.usersInserted} users.`,
       status: 200
     })
   } catch (err) {
     console.error("Error in student batch upload:", err);
-    
+
     const body = await req.json().catch(() => ({}));
     const jobId = body.jobId;
-    
+
     if (jobId) {
       const errorDetails = {
         message: err instanceof Error ? err.message : "Unknown error occurred during student batch upload",

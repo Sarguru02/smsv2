@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthClient } from "@/lib/auth-client"
 import { Edit, Eye, Trash2, UserPlus, Upload } from "lucide-react"
+import NewStudentDialog from "@/components/dialogs/new-student-dialog"
+import EditStudentDialog from "@/components/dialogs/edit-student-dialog"
 
 type Student = {
   id: string
@@ -39,13 +41,15 @@ export default function StudentsPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
   const fetchStudents = async (page: number = 1, search: string = "") => {
     try {
       setLoading(true)
       const searchParam = search ? `&search=${encodeURIComponent(search)}` : ""
       const response = await AuthClient.authenticatedFetch(`/api/student?page=${page}&limit=10${searchParam}`)
-      
+
       if (response.ok) {
         const data: StudentsResponse = await response.json()
         setStudents(data.students)
@@ -94,17 +98,20 @@ export default function StudentsPage() {
   }
 
   const handleEditStudent = (student: Student) => {
-    // TODO: Open edit modal or navigate to edit page
-    console.log('Edit student:', student)
+    setSelectedStudent(student)
+    setEditDialogOpen(true)
   }
 
   const handleDeleteStudent = async (student: Student) => {
     if (confirm(`Are you sure you want to delete ${student.name}?`)) {
       try {
-        const response = await AuthClient.authenticatedFetch(`/api/student/${student.id}`, {
+        const response = await AuthClient.authenticatedFetch(`/api/student/`, {
           method: 'DELETE',
+          body: JSON.stringify({
+            rollNos: [student.rollNo],
+          }),
         })
-        
+
         if (response.ok) {
           // Refresh the list
           fetchStudents(pagination.page, searchTerm)
@@ -125,9 +132,80 @@ export default function StudentsPage() {
     }
   }
 
-  const handleAddStudent = () => {
-    // TODO: Open add student modal or navigate to add page
-    console.log('Add new student')
+  const handleUpdateStudent = async ({ id, rollNo, name, className, section }: { id: string, rollNo: string, name: string, className: string, section: string }) => {
+    try {
+      console.log(id, rollNo, className, name, section);
+      const response = await AuthClient.authenticatedFetch(`/api/student`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          rollNo,
+          name,
+          className,
+          section,
+        }),
+      })
+
+      if (response.ok) {
+        // Refresh the list to show the updated student
+        fetchStudents(pagination.page, searchTerm)
+        alert('Student updated successfully!')
+      } else {
+        console.error('Failed to update student:', response.statusText)
+        if (response.status === 401) {
+          window.location.href = '/login'
+        } else if (response.status === 403) {
+          alert('You do not have permission to update students')
+        } else if (response.status === 409) {
+          alert('A student with this roll number already exists')
+        } else {
+          alert('Failed to update student. Please try again.')
+        }
+      }
+    } catch (error) {
+      console.error('Error updating student:', error)
+      alert('An error occurred while updating the student')
+    }
+  }
+
+  const handleAddStudent = async ({ rollNo, name, className, section }: { rollNo: string, name: string, className: string, section: string }) => {
+    try {
+      const response = await AuthClient.authenticatedFetch('/api/student', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rollNo,
+          name,
+          className,
+          section,
+        }),
+      })
+
+      if (response.ok) {
+        // Refresh the list to show the new student
+        fetchStudents(pagination.page, searchTerm)
+        alert('Student added successfully!')
+      } else {
+        console.error('Failed to add student:', response.statusText)
+        if (response.status === 401) {
+          window.location.href = '/login'
+        } else if (response.status === 403) {
+          alert('You do not have permission to add students')
+        } else if (response.status === 409) {
+          alert('A student with this roll number already exists')
+        } else {
+          alert('Failed to add student. Please try again.')
+        }
+      }
+    } catch (error) {
+      console.error('Error adding student:', error)
+      alert('An error occurred while adding the student')
+    }
   }
 
   const handleBatchUpload = () => {
@@ -180,7 +258,7 @@ export default function StudentsPage() {
       label: "Delete Student",
       onClick: handleDeleteStudent,
       variant: "ghost",
-      showForRoles: ["ADMIN"]
+      showForRoles: ["TEACHER", "ADMIN"]
     }
   ]
 
@@ -195,7 +273,7 @@ export default function StudentsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -209,7 +287,7 @@ export default function StudentsPage() {
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleAddStudent}>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-green-600" />
@@ -217,13 +295,11 @@ export default function StudentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" size="sm">
-              New Student
-            </Button>
+            <NewStudentDialog handleAddStudent={handleAddStudent} />
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleBatchUpload}>
+        <Card className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Upload className="w-5 h-5 text-purple-600" />
@@ -253,6 +329,14 @@ export default function StudentsPage() {
         actions={actions}
         searchPlaceholder="Search students by name, roll number, class..."
         emptyMessage="No students found. Add some students to get started."
+      />
+
+      {/* Edit Student Dialog */}
+      <EditStudentDialog
+        student={selectedStudent}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        handleEditStudent={handleUpdateStudent}
       />
     </div>
   )

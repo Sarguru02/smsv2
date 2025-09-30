@@ -4,6 +4,7 @@ import { MarkInputSchema } from "@/lib/types";
 import { z } from "zod";
 import { JobQueries } from "@/lib/db/job.queries";
 import { MarksQueries } from "@/lib/db/marks.queries";
+import { updateProcessedRowsWithIds } from "@/services/job.service";
 
 const markBatchUploadSchema = z.object({
   jobId: z.string().min(1),
@@ -15,16 +16,7 @@ async function handler(req: NextRequest) {
     const { jobId, markRows } = markBatchUploadSchema.parse(body);
 
     const createMarksResult = await MarksQueries.createManyMarks(markRows);
-
-    const job = await JobQueries.getJobById(jobId);
-    const processedRows = job?.processedRows ?? 0;
-
-    if (job?.totalRows === processedRows + markRows.length) {
-      const processedRowIds = markRows.map(m => m.rollNo);
-      const job = await JobQueries.updateStatus(jobId, "completed");
-      await JobQueries.updateProcessedRows(jobId, markRows.length);
-      await JobQueries.updateProcessedRowIds(jobId, [...job?.processedRowIds as string[], ...processedRowIds]);
-    }
+    await updateProcessedRowsWithIds(jobId, createMarksResult.count, markRows.map(m => m.rollNo));
 
     return NextResponse.json({
       success: true,

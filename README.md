@@ -64,20 +64,23 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
         After logging in, u will get the role from the backend. Use that role to choose which dashboard to show.
 - [x] Have sidebar, which has items based on roles. Have a cental config for that, and choose the items to show for each role.
 - [x] Teacher Dashboard.
-  - [ ] List students view. #BACKEND_DONE
-    - [ ] pagination -> 10 students per page. (query when going to that page).
-  - [ ] Upload student marks. -> single or batch. #BACKEND_DEPENDENCY
+  - [x] List students view. #BACKEND_DONE
+    - [x] pagination -> 10 students per page. (query when going to that page).
+  - [ ] Upload student marks (single). #BACKEND_DEPENDENCY
+  - [ ] Upload student marks (batch). #BACKEND_DEPENDENCY
   - [ ] View a single student.
     - [ ] should be able to edit or delete marks for that student.
     - [ ] approve student edits on their profile. -> #NOT_NOW
-    - [ ] Create students. -> single, batch.
-    - [ ] Edit student (with confirmation).
-    - [ ] Delete student (with confirmation).
-- [ ] Student Dashboard
+    - [ ] Create multiple students.
+    - [x] Create single student.
+    - [x] Edit student.
+    - [x] Delete student (with confirmation).
+- [x] Student Dashboard
   - [ ] Student details
     - [ ] Edit profile and send to teacher to approve. -> #NOT_NOW
   - [ ] List all exams available.
   - [ ] Marks for an exam.
+  - [ ] Mark changes -> main feature.
 
 ### BATCH PROCESSOR ARCHITECTURE
 
