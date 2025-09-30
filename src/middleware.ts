@@ -8,6 +8,7 @@ const secret = new TextEncoder().encode(Env.jwtSecret);
 const PUBLIC_ROUTES = [
   /^\/api\/auth(\/.*)?$/,  // all auth routes
   /^\/api\/batch(\/.*)?$/, // all qstash worker routes
+  /^\/api\/upload(\/.*)?$/, // all qstash worker routes
 ];
 
 function isPublicRoute(path: string) {
