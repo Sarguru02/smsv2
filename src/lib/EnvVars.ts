@@ -8,5 +8,5 @@ export const Env = {
   qstashNextSigningKey: process.env.QSTASH_NEXT_SIGNING_KEY,
   qstashToken: process.env.QSTASH_TOKEN,
   qstashUrl: process.env.QSTASH_URL,
-  apiHost: process.env.API_HOST,
+  apiHost: process.env.NEXT_PUBLIC_API_HOST,
 } as const;

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useAuth } from '@/components/auth-provider';
-import { getNavigationItems } from '@/lib/navigation';
+import { getNavigationItems, type NavigationItem } from '@/lib/navigation';
 import { 
   GraduationCap, 
   X, 
@@ -17,13 +17,14 @@ import {
 interface DashboardSidebarProps {
   isMobileOpen: boolean;
   setIsMobileOpen: (open: boolean) => void;
+  actionItems?: NavigationItem[];
 }
 
-export function DashboardSidebar({ isMobileOpen, setIsMobileOpen }: DashboardSidebarProps) {
+export function DashboardSidebar({ isMobileOpen, setIsMobileOpen, actionItems = [] }: DashboardSidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   
-  const navigationItems = user ? getNavigationItems(user.role) : [];
+  const navigationItems = user ? getNavigationItems(user.role, actionItems) : [];
 
   const handleLogout = async () => {
     await logout();
@@ -57,16 +58,21 @@ export function DashboardSidebar({ isMobileOpen, setIsMobileOpen }: DashboardSid
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1">
-        {navigationItems.map((item) => {
+        {navigationItems.map((item, index) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const isActive = item.href && (pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href)));
           
-          return (
-            <Link key={item.href} href={item.href}>
+          if (item.type === 'action' && item.action) {
+            // Action item - render as button with action
+            return (
               <Button
-                variant={isActive ? "default" : "ghost"}
+                key={`action-${index}`}
+                variant="ghost"
                 className="w-full justify-start gap-3 h-12"
-                onClick={() => setIsMobileOpen(false)}
+                onClick={() => {
+                  item.action?.();
+                  setIsMobileOpen(false);
+                }}
               >
                 <Icon className="w-5 h-5" />
                 <div className="text-left">
@@ -76,8 +82,28 @@ export function DashboardSidebar({ isMobileOpen, setIsMobileOpen }: DashboardSid
                   )}
                 </div>
               </Button>
-            </Link>
-          );
+            );
+          } else if (item.href) {
+            // Navigation item - render as link
+            return (
+              <Link key={item.href} href={item.href}>
+                <Button
+                  variant={isActive ? "default" : "ghost"}
+                  className="w-full justify-start gap-3 h-12"
+                  onClick={() => setIsMobileOpen(false)}
+                >
+                  <Icon className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="font-medium">{item.label}</div>
+                    {item.description && (
+                      <div className="text-xs opacity-70">{item.description}</div>
+                    )}
+                  </div>
+                </Button>
+              </Link>
+            );
+          }
+          return null;
         })}
       </nav>
 

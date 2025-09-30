@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react"
 import { ListViewPagination, Column, Action } from "@/components/list-view-pagination"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthClient } from "@/lib/auth-client"
 import { Edit, Eye, Trash2, UserPlus, Upload } from "lucide-react"
 import NewStudentDialog from "@/components/dialogs/new-student-dialog"
 import EditStudentDialog from "@/components/dialogs/edit-student-dialog"
+import BatchUploadDialog from "@/components/dialogs/batch-upload-dialog"
+import { Env } from "@/lib/EnvVars"
 
 type Student = {
   id: string
@@ -208,8 +209,8 @@ export default function StudentsPage() {
     }
   }
 
-  const handleBatchUpload = () => {
-    window.location.href = '/dashboard/students/upload'
+  const handleBatchUploadComplete = (jobId: string) => {
+    window.location.href = `/dashboard/jobs/${jobId}`
   }
 
 
@@ -307,9 +308,31 @@ export default function StudentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" variant="outline" size="sm">
-              Upload CSV
-            </Button>
+            <BatchUploadDialog
+              title="Batch Upload Students"
+              description="Upload a CSV file to add multiple students at once"
+              type="STUDENT_UPLOAD"
+              processEndpoint={Env.apiHost + "/api/batch/student/process-csv"}
+              sampleCSV={{
+                headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
+                sampleData: [
+                  ["2023001", "John Doe", "10", "A"],
+                  ["2023002", "Jane Smith", "10", "B"],
+                  ["2023003", "Bob Johnson", "11", "A"]
+                ],
+                filename: "student_upload_sample.csv"
+              }}
+              formatRequirements={{
+                title: "CSV Format Requirements",
+                requirements: [
+                  "Headers: ROLL NO, NAME, CLASS, SECTION",
+                  "Each row should contain student data",
+                  "No empty rows or columns",
+                  "Save as CSV format"
+                ]
+              }}
+              onUploadComplete={handleBatchUploadComplete}
+            />
           </CardContent>
         </Card>
 

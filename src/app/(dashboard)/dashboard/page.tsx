@@ -74,18 +74,19 @@ export default function DashboardPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {navigationItems
-              .filter(item => item.href !== '/dashboard')
+              .filter(item => item.href && item.href !== '/dashboard' && item.type !== 'action')
               .slice(0, 6)
               .map((item) => {
                 const Icon = item.icon;
+                const href = item.href as string; // Safe because we filtered above
                 return (
                   <Button
-                    key={item.href}
+                    key={href}
                     variant="outline"
                     className="h-auto p-4 flex-col gap-2 hover:bg-gray-50 dark:hover:bg-gray-800"
                     asChild
                   >
-                    <Link href={item.href}>
+                    <Link href={href}>
                       <Icon className="w-6 h-6" />
                       <div className="text-center">
                         <div className="font-medium">{item.label}</div>

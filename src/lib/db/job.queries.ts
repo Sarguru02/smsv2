@@ -1,17 +1,21 @@
+import { BatchUploadType } from "../types"
 import { prisma } from "./prisma"
 
-async function createJob(jobId: string, fileUrl: string) {
+async function createJob(jobId: string, fileUrl: string, userID: string, fileName: string, type: BatchUploadType) {
   return prisma.job.create({
     data: {
       id: jobId,
-      fileUrl: fileUrl
+      fileUrl,
+      fileName,
+      userID,
+      type,
     }
   })
 }
 
-async function getJobById(jobId: string){
+async function getJobById(jobId: string) {
   return prisma.job.findUnique({
-    where: { id : jobId }
+    where: { id: jobId }
   })
 }
 

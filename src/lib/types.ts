@@ -32,3 +32,5 @@ export const csvProcessSchema = z.object({
   fileUrl: z.string().min(1),
   jobId: z.string().min(1)
 })
+
+export type BatchUploadType = "STUDENT_DETAILS" | "MARKS_UPLOAD"

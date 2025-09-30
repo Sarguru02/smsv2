@@ -48,7 +48,10 @@ model Mark {
 // for the batch processor
 model Job {
   id              String   @id @default(cuid())
+  userID          String
   fileUrl         String
+  fileName        String
+  type            String
   totalRows       Int      @default(0)
   processedRows   Int      @default(0)
   processedRowIds Json?
