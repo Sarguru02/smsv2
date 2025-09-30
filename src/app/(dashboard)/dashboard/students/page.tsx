@@ -10,6 +10,7 @@ import NewStudentDialog from "@/components/dialogs/new-student-dialog"
 import EditStudentDialog from "@/components/dialogs/edit-student-dialog"
 import BatchUploadDialog from "@/components/dialogs/batch-upload-dialog"
 import { Env } from "@/lib/EnvVars"
+import { toast } from "sonner"
 
 type Student = {
   id: string
@@ -95,7 +96,7 @@ export default function StudentsPage() {
   }
 
   const handleViewStudent = (student: Student) => {
-    window.location.href = `/dashboard/students/${student.id}`
+    window.location.href = `/dashboard/students/${student.rollNo}`
   }
 
   const handleEditStudent = (student: Student) => {
@@ -121,14 +122,14 @@ export default function StudentsPage() {
           if (response.status === 401) {
             window.location.href = '/login'
           } else if (response.status === 403) {
-            alert('You do not have permission to delete students')
+            toast.error('You do not have permission to delete students')
           } else {
-            alert('Failed to delete student')
+            toast.error('Failed to delete student')
           }
         }
       } catch (error) {
         console.error('Error deleting student:', error)
-        alert('An error occurred while deleting the student')
+        toast.error('An error occurred while deleting the student')
       }
     }
   }
@@ -153,22 +154,22 @@ export default function StudentsPage() {
       if (response.ok) {
         // Refresh the list to show the updated student
         fetchStudents(pagination.page, searchTerm)
-        alert('Student updated successfully!')
+        toast.success('Student updated successfully!')
       } else {
         console.error('Failed to update student:', response.statusText)
         if (response.status === 401) {
           window.location.href = '/login'
         } else if (response.status === 403) {
-          alert('You do not have permission to update students')
+          toast.error('You do not have permission to update students')
         } else if (response.status === 409) {
-          alert('A student with this roll number already exists')
+          toast.error('A student with this roll number already exists')
         } else {
-          alert('Failed to update student. Please try again.')
+          toast.error('Failed to update student. Please try again.')
         }
       }
     } catch (error) {
       console.error('Error updating student:', error)
-      alert('An error occurred while updating the student')
+      toast.error('An error occurred while updating the student')
     }
   }
 
@@ -190,22 +191,22 @@ export default function StudentsPage() {
       if (response.ok) {
         // Refresh the list to show the new student
         fetchStudents(pagination.page, searchTerm)
-        alert('Student added successfully!')
+        toast.success('Student added successfully!')
       } else {
         console.error('Failed to add student:', response.statusText)
         if (response.status === 401) {
           window.location.href = '/login'
         } else if (response.status === 403) {
-          alert('You do not have permission to add students')
+          toast.error('You do not have permission to add students')
         } else if (response.status === 409) {
-          alert('A student with this roll number already exists')
+          toast.error('A student with this roll number already exists')
         } else {
-          alert('Failed to add student. Please try again.')
+          toast.error('Failed to add student. Please try again.')
         }
       }
     } catch (error) {
       console.error('Error adding student:', error)
-      alert('An error occurred while adding the student')
+      toast.error('An error occurred while adding the student')
     }
   }
 
@@ -304,7 +305,7 @@ export default function StudentsPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Upload className="w-5 h-5 text-purple-600" />
-              Batch Upload
+              Batch Student Upload
             </CardTitle>
           </CardHeader>
           <CardContent>

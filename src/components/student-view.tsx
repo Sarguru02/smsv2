@@ -4,10 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { User, Calendar, BookOpen, Trophy, Edit, Trash2, Plus } from "lucide-react"
+import { User, BookOpen, Trophy, Edit, Trash2, Plus } from "lucide-react"
 import { useAuth } from "./auth-provider"
 
-interface Student {
+export interface Student {
   id: string
   rollNo: string
   name: string
@@ -59,15 +59,16 @@ export function StudentView({
     return maxMarks > 0 ? ((total / maxMarks) * 100).toFixed(2) : "0"
   }
 
-  const getGrade = (percentage: number) => {
-    if (percentage >= 90) return { grade: 'A+', color: 'bg-green-100 text-green-800' }
-    if (percentage >= 80) return { grade: 'A', color: 'bg-green-100 text-green-800' }
-    if (percentage >= 70) return { grade: 'B+', color: 'bg-blue-100 text-blue-800' }
-    if (percentage >= 60) return { grade: 'B', color: 'bg-blue-100 text-blue-800' }
-    if (percentage >= 50) return { grade: 'C', color: 'bg-yellow-100 text-yellow-800' }
-    if (percentage >= 40) return { grade: 'D', color: 'bg-orange-100 text-orange-800' }
-    return { grade: 'F', color: 'bg-red-100 text-red-800' }
-  }
+  // TODO: Grade functionality commented out for future use
+  // const getGrade = (percentage: number) => {
+  //   if (percentage >= 90) return { grade: 'A+', color: 'bg-green-100 text-green-800' }
+  //   if (percentage >= 80) return { grade: 'A', color: 'bg-green-100 text-green-800' }
+  //   if (percentage >= 70) return { grade: 'B+', color: 'bg-blue-100 text-blue-800' }
+  //   if (percentage >= 60) return { grade: 'B', color: 'bg-blue-100 text-blue-800' }
+  //   if (percentage >= 50) return { grade: 'C', color: 'bg-yellow-100 text-yellow-800' }
+  //   if (percentage >= 40) return { grade: 'D', color: 'bg-orange-100 text-orange-800' }
+  //   return { grade: 'F', color: 'bg-red-100 text-red-800' }
+  // }
 
   if (loading) {
     return (
@@ -141,11 +142,6 @@ export function StudentView({
                 <span className="text-gray-400">Not assigned</span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">Joined:</span>
-              <span className="text-sm">{new Date(student.createdAt).toLocaleDateString()}</span>
-            </div>
           </div>
         </CardContent>
       </Card>
@@ -176,9 +172,16 @@ export function StudentView({
             </div>
           ) : (
             <div className="space-y-4">
-              {marks.map((mark) => {
+              {marks
+                .sort((a, b) => a.examName.localeCompare(b.examName))
+                .map((mark, index) => {
                 const percentage = parseFloat(calculatePercentage(mark.marks))
-                const { grade, color } = getGrade(percentage)
+                
+                // Calculate percentage change from previous exam
+                const sortedMarks = marks.sort((a, b) => a.examName.localeCompare(b.examName))
+                const previousMark = index > 0 ? sortedMarks[index - 1] : null
+                const previousPercentage = previousMark ? parseFloat(calculatePercentage(previousMark.marks)) : null
+                const percentageChange = previousPercentage !== null ? percentage - previousPercentage : null
                 
                 return (
                   <Card key={mark.id} className="border-l-4 border-l-blue-500">
@@ -191,8 +194,15 @@ export function StudentView({
                           </CardDescription>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge className={color}>{grade}</Badge>
                           <span className="text-lg font-semibold">{percentage}%</span>
+                          {percentageChange !== null && (
+                            <Badge 
+                              variant="outline" 
+                              className={percentageChange >= 0 ? 'text-green-600 border-green-600' : 'text-red-600 border-red-600'}
+                            >
+                              {percentageChange >= 0 ? '+' : ''}{percentageChange.toFixed(2)}%
+                            </Badge>
+                          )}
                           {isTeacher && (
                             <div className="flex gap-1">
                               {onEditMarks && (
@@ -221,15 +231,14 @@ export function StudentView({
                         </TableHeader>
                         <TableBody>
                           {Object.entries(mark.marks).map(([subject, marks]) => {
-                            const subjectGrade = getGrade(marks)
+                            // const subjectGrade = getGrade(marks) // Commented out for future use
                             return (
                               <TableRow key={subject}>
                                 <TableCell className="font-medium capitalize">{subject}</TableCell>
                                 <TableCell>{marks}/100</TableCell>
                                 <TableCell>
-                                  <Badge className={subjectGrade.color} variant="outline">
-                                    {subjectGrade.grade}
-                                  </Badge>
+                                  {/* Grade functionality commented out */}
+                                  <span className="text-sm text-gray-600">{marks}%</span>
                                 </TableCell>
                               </TableRow>
                             )
@@ -240,7 +249,7 @@ export function StudentView({
                               {calculateTotalMarks(mark.marks)}/{Object.keys(mark.marks).length * 100}
                             </TableCell>
                             <TableCell>
-                              <Badge className={color}>{grade}</Badge>
+                              <span className="font-bold">{percentage}%</span>
                             </TableCell>
                           </TableRow>
                         </TableBody>
