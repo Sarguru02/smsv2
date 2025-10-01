@@ -21,8 +21,8 @@ export default function DashboardLayout({
   const [marksDialogOpen, setMarksDialogOpen] = useState(false);
   const router = useRouter();
 
-  const handleBatchUploadComplete = (jobId: string) => {
-    router.push(`/dashboard/jobs/${jobId}`);
+  const handleBatchUploadComplete = () => {
+    router.push(`/dashboard/jobs`);
   };
 
   const actionItems: NavigationItem[] = [

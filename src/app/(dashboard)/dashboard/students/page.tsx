@@ -210,8 +210,8 @@ export default function StudentsPage() {
     }
   }
 
-  const handleBatchUploadComplete = (jobId: string) => {
-    window.location.href = `/dashboard/jobs/${jobId}`
+  const handleBatchUploadComplete = () => {
+    window.location.href = `/dashboard/jobs/`
   }
 
 

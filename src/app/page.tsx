@@ -210,7 +210,7 @@ export default function LandingPage() {
               Student Management System
             </div>
             <div className="text-gray-600 dark:text-gray-400">
-              © 2024 Student Management System. All rights reserved.
+              © Student Management System. All rights reserved.
             </div>
           </div>
         </div>

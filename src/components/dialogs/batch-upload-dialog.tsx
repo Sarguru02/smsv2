@@ -40,10 +40,10 @@ type Props = {
   formatRequirements: FormatRequirement
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  onUploadComplete?: (jobId: string) => void
+  onUploadComplete?: () => void
 }
 
-export default function BatchUploadDialog({ 
+export default function BatchUploadDialog({
   title,
   description,
   type,
@@ -52,7 +52,7 @@ export default function BatchUploadDialog({
   formatRequirements,
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
-  onUploadComplete 
+  onUploadComplete
 }: Props) {
   const [internalOpen, setInternalOpen] = useState(false)
   const open = externalOpen !== undefined ? externalOpen : internalOpen
@@ -111,7 +111,7 @@ export default function BatchUploadDialog({
       const jobId = crypto.randomUUID();
 
       // Upload to Vercel Blob
-      const fileName = "studentDetails/" + selectedFile.name;
+      const fileName = type + "/" + jobId + "/" + selectedFile.name;
       await upload(fileName, selectedFile, {
         access: 'public',
         handleUploadUrl: '/api/upload',
@@ -139,7 +139,7 @@ export default function BatchUploadDialog({
 
       // Call callback and navigate to jobs page
       if (onUploadComplete) {
-        onUploadComplete(jobId)
+        onUploadComplete()
       }
 
     } catch (error) {

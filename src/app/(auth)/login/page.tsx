@@ -132,17 +132,6 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Demo credentials info */}
-        <Card className="bg-blue-50 dark:bg-blue-900/20">
-          <CardContent className="p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300 text-center">
-              <strong>Demo Credentials:</strong><br />
-              Teacher: admin / password<br />
-              Student: student / password
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
