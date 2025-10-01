@@ -39,15 +39,51 @@ export async function createStudentWithUser(
 
 export async function deleteStudentWithUser(rollNos: string[]) {
   return prisma.$transaction(async (tx) => {
+    // First delete all marks for these students
+    const marksDelete = await tx.mark.deleteMany({
+      where: { studentId: { in: rollNos } }
+    });
+
+    // Then delete the students
     const studentDelete = await tx.student.deleteMany({
       where: { rollNo: { in: rollNos } }
     });
 
+    // Finally delete the user accounts
     const userDelete = await tx.user.deleteMany({
       where: { username: { in: rollNos } }
     });
 
-    return { studentDelete, userDelete };
+    return { 
+      marksDeleted: marksDelete.count,
+      studentsDeleted: studentDelete.count,
+      usersDeleted: userDelete.count
+    };
+  });
+}
+
+export async function deleteSingleStudentWithUser(rollNo: string) {
+  return prisma.$transaction(async (tx) => {
+    // First delete all marks for this student
+    const marksDelete = await tx.mark.deleteMany({
+      where: { studentId: rollNo }
+    });
+
+    // Then delete the student
+    const studentDelete = await tx.student.delete({
+      where: { rollNo }
+    });
+
+    // Finally delete the user account
+    const userDelete = await tx.user.delete({
+      where: { username: rollNo }
+    });
+
+    return { 
+      marksDeleted: marksDelete.count,
+      studentDeleted: studentDelete,
+      userDeleted: userDelete
+    };
   });
 }
 

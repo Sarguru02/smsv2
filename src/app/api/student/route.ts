@@ -39,10 +39,15 @@ export const GET = withAuth(['TEACHER'], async (req) => {
 export const DELETE = withAuth(['TEACHER'], async (req) => {
   const body = await req.json();
   const { rollNos } = deleteStudentSchema.parse(body);
-  const uresult = await deleteStudentWithUser(rollNos);
+  const result = await deleteStudentWithUser(rollNos);
   return NextResponse.json({
     success: true,
-    message: `Successfully deleted ${uresult.userDelete} students`
+    message: `Successfully deleted ${result.studentsDeleted} students, ${result.usersDeleted} user accounts, and ${result.marksDeleted} exam records`,
+    details: {
+      studentsDeleted: result.studentsDeleted,
+      usersDeleted: result.usersDeleted,
+      marksDeleted: result.marksDeleted
+    }
   });
 })
 
