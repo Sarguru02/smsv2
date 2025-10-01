@@ -38,12 +38,14 @@ export function AuthGuard({ children, allowedRoles, requiredRole }: AuthGuardPro
           
           if (rolesToCheck.length > 0 && !rolesToCheck.includes(fetchedUserRole)) {
             // Redirect to appropriate dashboard if user doesn't have access to this specific route
+            alert("You are not allowed to this page.")
             window.location.href = '/dashboard';
             return;
           }
         } else {
           AuthClient.removeToken();
           setIsAuthenticated(false);
+          alert('Not authenticated, login again to continue');
           window.location.href = '/login';
         }
       } catch {
