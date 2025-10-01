@@ -35,5 +35,5 @@ export async function createManyStudentsWithUsers(students: StudentInput[]) {
       studentsInserted: studentsResult.count,
       usersInserted: usersResult.count
     };
-  });
+  }, { timeout: 60000 });
 }
