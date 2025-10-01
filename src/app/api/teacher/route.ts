@@ -40,7 +40,7 @@ export const POST = withAuth([], async (req) => {
   })
 })
 
-export const GET = withAuth(["ADMIN"], async (req) => {
+export const GET = withAuth([], async (req) => {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
@@ -50,7 +50,7 @@ export const GET = withAuth(["ADMIN"], async (req) => {
   return NextResponse.json(result);
 })
 
-export const PUT = withAuth(["ADMIN"], async (req) => {
+export const PUT = withAuth([], async (req) => {
   const body = await req.json();
   const { id, username } = updateTeacherSchema.parse(body);
 
@@ -62,7 +62,7 @@ export const PUT = withAuth(["ADMIN"], async (req) => {
   })
 })
 
-export const DELETE = withAuth(["ADMIN"], async (req) => {
+export const DELETE = withAuth([], async (req) => {
   const body = await req.json();
   const { ids } = deleteTeacherSchema.parse(body);
   const uresult = await UserQueries.deleteManyUsersById(ids);

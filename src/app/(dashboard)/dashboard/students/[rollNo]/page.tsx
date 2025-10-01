@@ -22,48 +22,46 @@ interface Mark {
   updatedAt: string
 }
 
-export default function StudentPage({ params }: { params: Promise<{ rollNo: string }> }) {
+export default function StudentPage({ params }: { params: { rollNo: string } }) {
   const [rollNo, setRollNo] = useState<string>("");
   const [student, setStudent] = useState<Student>();
   const [marks, setMarks] = useState<Mark[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    params.then(({ rollNo }) => {
-      setRollNo(rollNo);
-    });
+    setRollNo(params.rollNo);
   }, [params]);
 
-  const fetchStudentMarks = async () => {
-    if (!rollNo) return;
-    
-    try {
-      setLoading(true);
-      
-      // Fetch student data
-      const studentRes = await AuthClient.authenticatedFetch(`/api/student/rollNo/${rollNo}`);
-      if (!studentRes.ok) {
-        throw new Error("Failed to fetch student data");
-      }
-      const st = await studentRes.json();
-      setStudent(st);
-
-      // Fetch student marks
-      const marksRes = await AuthClient.authenticatedFetch(`/api/student/rollNo/${rollNo}/marks`);
-      if (!marksRes.ok) {
-        throw new Error("Failed to fetch marks data");
-      }
-      const m = await marksRes.json();
-      setMarks(m);
-    } catch (error) {
-      console.error("Error fetching student data:", error);
-      toast.error("Failed to load student data");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   useEffect(() => {
+    const fetchStudentMarks = async () => {
+      if (!rollNo) return;
+
+      try {
+        setLoading(true);
+
+        // Fetch student data
+        const studentRes = await AuthClient.authenticatedFetch(`/api/student/rollNo/${rollNo}`);
+        if (!studentRes.ok) {
+          throw new Error("Failed to fetch student data");
+        }
+        const st = await studentRes.json();
+        setStudent(st);
+
+        // Fetch student marks
+        const marksRes = await AuthClient.authenticatedFetch(`/api/student/rollNo/${rollNo}/marks`);
+        if (!marksRes.ok) {
+          throw new Error("Failed to fetch marks data");
+        }
+        const m = await marksRes.json();
+        setMarks(m);
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+        toast.error("Failed to load student data");
+      } finally {
+        setLoading(false);
+      }
+    }
     fetchStudentMarks();
   }, [rollNo]);
 

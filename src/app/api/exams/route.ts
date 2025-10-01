@@ -1,8 +1,8 @@
 import { withAuth } from "@/lib/auth";
 import { MarksQueries } from "@/lib/db/marks.queries";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export const GET = withAuth(['STUDENT', 'TEACHER', 'ADMIN'], async (req, user) => {
+export const GET = withAuth(['STUDENT', 'TEACHER'], async (req, user) => {
   const url = new URL(req.url);
   const page = parseInt(url.searchParams.get('page') || '1');
   const limit = parseInt(url.searchParams.get('limit') || '10');

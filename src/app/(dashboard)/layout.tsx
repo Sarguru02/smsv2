@@ -22,7 +22,9 @@ export default function DashboardLayout({
   const router = useRouter();
 
   const handleBatchUploadComplete = () => {
-    router.push(`/dashboard/jobs`);
+    setTimeout(() => {
+      router.push(`/dashboard/jobs`);
+    }, 1500)
   };
 
   const actionItems: NavigationItem[] = [
@@ -66,28 +68,28 @@ export default function DashboardLayout({
             title="Batch Upload Students"
             description="Upload a CSV file to add multiple students at once"
             type="STUDENT_UPLOAD"
-            processEndpoint={Env.apiHost + "/api/batch/student/process-csv" }
-          sampleCSV={{
-            headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
-            sampleData: [
-              ["2023001", "John Doe", "10", "A"],
-              ["2023002", "Jane Smith", "10", "B"],
-              ["2023003", "Bob Johnson", "11", "A"]
-            ],
-            filename: "student_upload_sample.csv"
-          }}
-          formatRequirements={{
-            title: "CSV Format Requirements",
-            requirements: [
-              "Headers: ROLL NO, NAME, CLASS, SECTION",
-              "Each row should contain student data",
-              "No empty rows or columns",
-              "Save as CSV format"
-            ]
-          }}
-          open={studentsDialogOpen}
-          onOpenChange={setStudentsDialogOpen}
-          onUploadComplete={handleBatchUploadComplete}
+            processEndpoint={Env.apiHost + "/api/batch/student/process-csv"}
+            sampleCSV={{
+              headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
+              sampleData: [
+                ["2023001", "John Doe", "10", "A"],
+                ["2023002", "Jane Smith", "10", "B"],
+                ["2023003", "Bob Johnson", "11", "A"]
+              ],
+              filename: "student_upload_sample.csv"
+            }}
+            formatRequirements={{
+              title: "CSV Format Requirements",
+              requirements: [
+                "Headers: ROLL NO, NAME, CLASS, SECTION",
+                "Each row should contain student data",
+                "No empty rows or columns",
+                "Save as CSV format"
+              ]
+            }}
+            open={studentsDialogOpen}
+            onOpenChange={setStudentsDialogOpen}
+            onUploadComplete={handleBatchUploadComplete}
           />
 
           <BatchUploadDialog
