@@ -12,9 +12,10 @@ const studentBatchUploadSchema = z.object({
   students: z.array(StudentInputSchema)
 })
 async function handler(req: NextRequest) {
+  let body: z.infer<typeof studentBatchUploadSchema> | undefined;
   try {
-    const body = await req.json();
-    const { jobId, students } = studentBatchUploadSchema.parse(body);
+    body = studentBatchUploadSchema.parse(await req.json());
+    const { jobId, students } = body;
 
     const createStudentsResult = await createManyStudentsWithUsers(students);
     await updateProcessedRowsWithIds(jobId, students.length, students.map(s => s.rollNo));
@@ -27,13 +28,12 @@ async function handler(req: NextRequest) {
   } catch (err) {
     console.error("Error in student batch upload:", err);
 
-    const body = await req.json().catch(() => ({}));
-    const jobId = body.jobId;
+    const jobId = body?.jobId;
 
     if (jobId) {
       let errorMessage = "Unknown error occurred during student batch upload";
       let errorContext = "student_batch_upload";
-      
+
       // Handle specific Prisma errors
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         switch (err.code) {
@@ -70,7 +70,7 @@ async function handler(req: NextRequest) {
         context: errorContext,
         prismaCode: err instanceof Prisma.PrismaClientKnownRequestError ? err.code : undefined
       };
-      
+
       await JobQueries.updateStatusWithError(jobId, "failed", errorDetails);
     }
 

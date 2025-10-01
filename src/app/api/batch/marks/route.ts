@@ -12,9 +12,10 @@ const markBatchUploadSchema = z.object({
   markRows: z.array(MarkInputSchema)
 })
 async function handler(req: NextRequest) {
+  let body: z.infer<typeof markBatchUploadSchema> | undefined;
   try {
-    const body = await req.json();
-    const { jobId, markRows } = markBatchUploadSchema.parse(body);
+    body = markBatchUploadSchema.parse(await req.json());
+    const { jobId, markRows } = body;
 
     const createMarksResult = await MarksQueries.createManyMarks(markRows);
     await updateProcessedRowsWithIds(jobId, createMarksResult.count, markRows.map(m => m.rollNo));
@@ -26,14 +27,13 @@ async function handler(req: NextRequest) {
     })
   } catch (err) {
     console.error("Error in marks batch upload:", err);
-    
-    const body = await req.json().catch(() => ({}));
-    const jobId = body.jobId;
-    
+
+    const jobId = body?.jobId;
+
     if (jobId) {
       let errorMessage = "Unknown error occurred during marks batch upload";
       let errorContext = "marks_batch_upload";
-      
+
       // Handle specific Prisma errors
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         switch (err.code) {
@@ -70,7 +70,7 @@ async function handler(req: NextRequest) {
         context: errorContext,
         prismaCode: err instanceof Prisma.PrismaClientKnownRequestError ? err.code : undefined
       };
-      
+
       await JobQueries.updateStatusWithError(jobId, "failed", errorDetails);
     }
 
