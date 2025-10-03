@@ -3,19 +3,20 @@ import { NextResponse } from "next/server";
 import { StudentQueries } from "@/lib/db/student.queries";
 
 type StudentRouteContext = {
-  params: Promise<{className: string }>;
+  params: Promise<{ className: string }>;
 }
 
-export const GET = withAuth<StudentRouteContext>(['TEACHER'], async (req, _, context ) => {
-  if(!context){
+export const GET = withAuth<StudentRouteContext>(['TEACHER'], async (req, _, context) => {
+  if (!context) {
     throw new Error("context is missing");
   }
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const searchTerm = searchParams.get('searchTerm');
   const { className } = await context.params;
 
-  const result = await StudentQueries.findManyStudentsByClass(className, page, limit);
-  
+  const result = await StudentQueries.findManyStudentsByClass(className, page, limit, searchTerm as string | undefined);
+
   return NextResponse.json(result);
 })

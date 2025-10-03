@@ -1,19 +1,32 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { useAuth } from "./auth-provider"
-import { useState } from "react"
+import { Dispatch, SetStateAction } from "react"
 
 // Generic type for data items
 export interface DataItem {
-  id?: string | number;
-  [key: string]: unknown;
+  id?: string
+  [key: string]: unknown
 }
 
 export interface Column<T = DataItem> {
@@ -55,6 +68,8 @@ interface ListViewPaginationProps<T = DataItem> {
   searchTerm: string
   onSearchChange: (term: string) => void
   onPageChange: (page: number) => void
+  selectedItems?: Set<T>
+  setSelectedItems?: Dispatch<SetStateAction<Set<T>>>
   actions?: Action<T>[]
   bulkActions?: BulkAction<T>[]
   searchPlaceholder?: string
@@ -72,6 +87,8 @@ export function ListViewPagination<T extends DataItem = DataItem>({
   searchTerm,
   onSearchChange,
   onPageChange,
+  selectedItems,
+  setSelectedItems,
   actions = [],
   bulkActions = [],
   searchPlaceholder = "Search...",
@@ -79,82 +96,86 @@ export function ListViewPagination<T extends DataItem = DataItem>({
   enableBulkSelect = false
 }: ListViewPaginationProps<T>) {
   const { user } = useAuth()
-  const [selectedItems, setSelectedItems] = useState<Set<string | number>>(new Set())
-  const [selectAll, setSelectAll] = useState(false)
+
+  if (enableBulkSelect && (!selectedItems || !setSelectedItems)) {
+    throw new Error("Bulk select enabled but no selectedItems/setSelectedItems provided")
+  }
 
   const renderCellValue = (column: Column<T>, item: T): React.ReactNode => {
     const value = item[column.key as keyof T]
 
-    if (column.render) {
-      return column.render(value, item)
-    }
+    if (column.render) return column.render(value, item)
 
     if (value === null || value === undefined) {
       return <span className="text-gray-400">-</span>
     }
 
-    if (typeof value === 'boolean') {
-      return <Badge variant={value ? "default" : "outline"}>{value ? "Yes" : "No"}</Badge>
+    if (typeof value === "boolean") {
+      return (
+        <Badge variant={value ? "default" : "outline"}>
+          {value ? "Yes" : "No"}
+        </Badge>
+      )
     }
 
-    if (value instanceof Date || (typeof value === 'string' && !isNaN(Date.parse(value)))) {
+    if (value instanceof Date || (typeof value === "string" && !isNaN(Date.parse(value)))) {
       return new Date(value as string | Date).toLocaleDateString()
     }
 
-    // Convert any primitive value to string for safe rendering
-    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'bigint') {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "bigint") {
       return String(value)
     }
 
-    // For any other type, convert to string or show fallback
     return value ? String(value) : <span className="text-gray-400">-</span>
   }
 
-  const filteredActions = actions.filter(action =>
-    !action.showForRoles || action.showForRoles.includes(user?.role || '')
+  const filteredActions = actions.filter(
+    action => !action.showForRoles || action.showForRoles.includes(user?.role || "")
   )
 
-  const filteredBulkActions = bulkActions.filter(action =>
-    !action.showForRoles || action.showForRoles.includes(user?.role || '')
+  const filteredBulkActions = bulkActions.filter(
+    action => !action.showForRoles || action.showForRoles.includes(user?.role || "")
   )
 
   const handleSelectAll = (checked: boolean) => {
-    setSelectAll(checked)
-    if (checked) {
-      const allIds = new Set(data.map(item => item.id).filter(Boolean) as (string | number)[])
-      setSelectedItems(allIds)
-    } else {
-      setSelectedItems(new Set())
-    }
+    if (!setSelectedItems) return
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        data.forEach(item => newSet.add(item));
+      } else {
+        data.forEach(item => newSet.delete(item));
+      }
+      return newSet;
+    })
+
   }
 
-  const handleSelectItem = (itemId: string | number, checked: boolean) => {
-    const newSelected = new Set(selectedItems)
-    if (checked) {
-      newSelected.add(itemId)
-    } else {
-      newSelected.delete(itemId)
-      setSelectAll(false)
-    }
-    setSelectedItems(newSelected)
-    
-    // Update select all state
-    if (newSelected.size === data.length) {
-      setSelectAll(true)
-    }
+  const handleSelectItem = (item: T, checked: boolean) => {
+    if (!setSelectedItems || !selectedItems) return
+
+    setSelectedItems(prev => {
+      const next = new Set(prev)
+      if (checked) {
+        next.add(item)
+      } else {
+        next.delete(item);
+      }
+      return next
+    })
   }
 
   const getSelectedItemsData = (): T[] => {
-    return data.filter(item => item.id && selectedItems.has(item.id))
+    if (!selectedItems) return []
+    return Array.from(selectedItems);
   }
 
   const handleBulkAction = (action: BulkAction<T>) => {
+    if (!setSelectedItems || !selectedItems) return
     const selectedData = getSelectedItemsData()
     if (selectedData.length > 0) {
       action.onClick(selectedData)
-      // Clear selection after action
-      setSelectedItems(new Set())
-      setSelectAll(false)
+      setSelectedItems(() => new Set())
     }
   }
 
@@ -167,7 +188,7 @@ export function ListViewPagination<T extends DataItem = DataItem>({
             <CardDescription>{description}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            {enableBulkSelect && selectedItems.size > 0 && (
+            {enableBulkSelect && selectedItems && selectedItems.size > 0 && (
               <div className="flex items-center gap-2 mr-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
                   {selectedItems.size} selected
@@ -216,8 +237,8 @@ export function ListViewPagination<T extends DataItem = DataItem>({
                   {enableBulkSelect && (
                     <TableHead className="w-12">
                       <Checkbox
-                        checked={selectAll}
-                        onCheckedChange={handleSelectAll}
+                        checked={data.length > 0 && data.every(item => selectedItems?.has(item))}
+                        onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
                         aria-label="Select all items"
                       />
                     </TableHead>
@@ -230,9 +251,9 @@ export function ListViewPagination<T extends DataItem = DataItem>({
               </TableHeader>
               <TableBody>
                 {data.map((item, index) => {
-                  const itemId = item.id || index
-                  const isSelected = item.id ? selectedItems.has(item.id) : false
-                  
+                  const itemId = item.id ?? index
+                  const isSelected = item.id ? selectedItems?.has(item) : false
+
                   return (
                     <TableRow key={itemId}>
                       {enableBulkSelect && (
@@ -240,8 +261,8 @@ export function ListViewPagination<T extends DataItem = DataItem>({
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={(checked) => {
-                              if (item.id) {
-                                handleSelectItem(item.id, checked as boolean)
+                              if (item.id && typeof checked === "boolean") {
+                                handleSelectItem(item, checked)
                               }
                             }}
                             aria-label={`Select item ${itemId}`}
@@ -250,7 +271,10 @@ export function ListViewPagination<T extends DataItem = DataItem>({
                         </TableCell>
                       )}
                       {columns.map((column) => (
-                        <TableCell key={column.key} className={column.key === columns[0].key ? "font-medium" : ""}>
+                        <TableCell
+                          key={column.key}
+                          className={column.key === columns[0].key ? "font-medium" : ""}
+                        >
                           {renderCellValue(column, item)}
                         </TableCell>
                       ))}
@@ -280,8 +304,8 @@ export function ListViewPagination<T extends DataItem = DataItem>({
             {pagination.totalPages > 1 && (
               <div className="flex items-center justify-between mt-4">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
-                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                  Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
                   {pagination.total} items
                 </div>
                 <div className="flex items-center gap-2">

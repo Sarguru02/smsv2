@@ -46,11 +46,12 @@ export default function StudentsPage() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [selectedStudents, setSelectedStudents] = useState<Set<Student>>(new Set());
 
   const fetchStudents = async (page: number = 1, search: string = "") => {
     try {
       setLoading(true)
-      const searchParam = search ? `&search=${encodeURIComponent(search)}` : ""
+      const searchParam = search ? `&searchTerm=${encodeURIComponent(search)}` : ""
       const response = await AuthClient.authenticatedFetch(`/api/student?page=${page}&limit=10${searchParam}`)
 
       if (response.ok) {
@@ -400,6 +401,8 @@ export default function StudentsPage() {
           onPageChange={handlePageChange}
           actions={actions}
           bulkActions={bulkActions}
+          selectedItems={selectedStudents}
+          setSelectedItems={setSelectedStudents}
           enableBulkSelect={true}
           searchPlaceholder="Search students by name, roll number, class..."
           emptyMessage="No students found. Add some students to get started."

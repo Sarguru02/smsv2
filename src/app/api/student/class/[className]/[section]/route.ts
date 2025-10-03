@@ -13,10 +13,11 @@ export const GET = withAuth<StudentRouteContext>(['TEACHER'], async (req, _user,
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const searchTerm = searchParams.get('searchTerm');
   const {className, section} = await context.params;
 
 
-  const result = await StudentQueries.findManyStudentsByClassAndSection(className, section, page, limit);
+  const result = await StudentQueries.findManyStudentsByClassAndSection(className, section, page, limit, searchTerm as string | undefined);
   
   return NextResponse.json(result);
 })

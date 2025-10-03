@@ -21,8 +21,9 @@ export const GET = withAuth(['TEACHER'], async (req) => {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = parseInt(searchParams.get('limit') || '10', 10);
+  const searchTerm = searchParams.get('searchTerm');
 
-  const result = await StudentQueries.findManyStudents(page, limit);
+  const result = await StudentQueries.findManyStudents(page, limit, searchTerm as string | undefined);
 
   // Restructure to match component expectations
   return NextResponse.json({
