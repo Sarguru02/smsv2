@@ -25,7 +25,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const result = await AuthClient.login(username, password);
+      const result = await AuthClient.login(username.trim(), password.trim());
       
       if (result.success && result.user) {
         // Redirect to dashboard (role-based content is handled there)

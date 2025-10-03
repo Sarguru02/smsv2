@@ -35,11 +35,13 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] implement authentication for the api routes.
 - [x] csv batch processor -> upload Marks
 - [x] csv batch processor -> upload students
-- [ ] list jobs endpoint
-- [ ] delete blobs by teacher
+- [x] list jobs endpoint
+- [x] delete blobs by teacher
+- [ ] subjects crud.
+- [ ] subjects batch.
 - [ ] search functionality for listview
   - [x] for exams list
-  - [ ] for students list
+  - [x] for students list
   - [ ] for teachers list
 
 **ADMIN(All these should be secret frontend routes)**
@@ -73,6 +75,8 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
     - [x] pagination -> 10 students per page. (query when going to that page).
   - [ ] Upload student marks (single) -> I think I can have this as an action in list view??. #BACKEND_DEPENDENCY
   - [x] Upload student marks (batch). #BACKEND_DEPENDENCY
+  - [ ] Subjects crud for class and section.
+  - [ ] Bulk upload subjects.
   - [x] View a single student.
     - [x] should be able to edit or delete marks for that student.
     - [ ] approve student edits on their profile. -> #NOT_NOW
@@ -90,17 +94,14 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 ### BATCH PROCESSOR ARCHITECTURE
 
 **FRONTEND**
-1. Ask backend for file url in vercel blob.
-2. Upload the file in the vercel blob.
-3. Acknowledge file is uploaded to vercel blob to backend.
-4. Show the status, manual refresh needed to know if it is success or failed.
+1. Upload the file in the vercel blob.
+2. Show the status, manual refresh needed to know if it is success or failed.
 
 **BACKEND**
-1. Create an url for the file in vercel blob.
-2. Expose another route for acknowledgement?? or get through websocket or something.
-3. After acknowledgement, queue a job, add it to db.
+1. Vercel handlers for blob file uploads, and onUploadCompleted callback.
 
 **WORKER**
 1. The processing logic should be -> take some max amount of rows from the uploaded csv through a redis stream or something.
 2. Call the appropriate next.js backend endpoint, and update the status for each worker.
-3. When a worker takes the last values from the csv, delete the csv.
+
+CSV DELETION IS HANDLED SEPARATELY.

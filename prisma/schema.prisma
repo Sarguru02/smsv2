@@ -57,6 +57,7 @@ model Job {
   processedRowIds Json?
   status          String   @default("pending") // pending, processing, completed, failed
   errorStatus     Json?    // error details if job failed
+  fileDeleted     Boolean  @default(false) // track if the file was deleted from blob storage
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
