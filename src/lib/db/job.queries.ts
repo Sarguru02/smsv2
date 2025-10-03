@@ -10,6 +10,8 @@ async function createJob(jobId: string, fileUrl: string, userID: string, fileNam
       fileName,
       userID,
       type,
+      createdAt: new Date(), 
+      updatedAt: new Date(),
     }
   })
 }
@@ -26,7 +28,8 @@ async function updateTotalRows(jobId: string, incTotalRows: number) {
     data: {
       totalRows: {
         increment: incTotalRows
-      }
+      },
+      updatedAt: new Date(),
     }
   })
 }
@@ -36,7 +39,8 @@ async function updateStatusWithError(jobId: string, status: string, errorStatus:
     where: { id: jobId },
     data: {
       status,
-      errorStatus
+      errorStatus,
+      updatedAt: new Date()
     }
   })
 }
@@ -116,7 +120,8 @@ async function markFileAsDeleted(jobId: string) {
   return prisma.job.update({
     where: { id: jobId },
     data: {
-      fileDeleted: true
+      fileDeleted: true,
+      updatedAt: new Date()
     }
   })
 }

@@ -37,8 +37,8 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] csv batch processor -> upload students
 - [x] list jobs endpoint
 - [x] delete blobs by teacher
-- [ ] subjects crud.
-- [ ] subjects batch.
+- [x] subjects crud.
+- [x] subjects batch.
 - [ ] search functionality for listview
   - [x] for exams list
   - [x] for students list
@@ -75,8 +75,8 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
     - [x] pagination -> 10 students per page. (query when going to that page).
   - [ ] Upload student marks (single) -> I think I can have this as an action in list view??. #BACKEND_DEPENDENCY
   - [x] Upload student marks (batch). #BACKEND_DEPENDENCY
-  - [ ] Subjects crud for class and section.
-  - [ ] Bulk upload subjects.
+  - [x] Subjects crud for class and section.
+  - [x] Bulk upload subjects.
   - [x] View a single student.
     - [x] should be able to edit or delete marks for that student.
     - [ ] approve student edits on their profile. -> #NOT_NOW

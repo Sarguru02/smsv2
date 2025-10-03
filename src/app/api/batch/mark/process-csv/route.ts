@@ -103,7 +103,7 @@ async function handler(req: NextRequest) {
     
     const totalRows = await processCsv(fileUrl, async (rows) => {
       await qstash.publishJSON({
-        url: `${Env.apiHost}/api/batch/marks/`,
+        url: `${Env.apiHost}/api/batch/mark/`,
         body: {
           jobId,
           markRows: rows

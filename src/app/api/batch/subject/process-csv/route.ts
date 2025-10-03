@@ -6,7 +6,7 @@ import type { ReadableStream as NodeReadableStream } from "stream/web";
 import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
 import { qstash } from "@/lib/qstash";
 import { Env } from "@/lib/EnvVars";
-import { csvProcessSchema, Row, studentCsvRequiredHeaders, StudentInput } from "@/lib/types";
+import { csvProcessSchema, Row, subjectCsvRequiredHeaders, SubjectInput, SubjectInputSchema } from "@/lib/types";
 import { AppError, BadRequestError } from "@/lib/errors";
 import { JobQueries } from "@/lib/db/job.queries";
 
@@ -15,20 +15,20 @@ async function readableFromWebStream(stream: NodeReadableStream) {
 }
 
 function validateHeaders(row: Record<string, string>) {
-  for (const key of studentCsvRequiredHeaders) {
+  for (const key of subjectCsvRequiredHeaders) {
     if (!(key in row)) {
       throw new BadRequestError(`Missing required column: ${key}`);
     }
   }
 }
 
-function toStudentRow(raw: Record<string, string>): StudentInput {
-  return {
-    rollNo: raw["ROLL NO"],
+function toSubjectRow(raw: Record<string, string>): SubjectInput {
+  return SubjectInputSchema.parse({
     name: raw["NAME"],
     className: raw["CLASS"],
     section: raw["SECTION"],
-  };
+    maxMarks: raw["MAXIMUM MARKS"]
+  });
 }
 
 async function processCsv(
@@ -56,15 +56,15 @@ async function processCsv(
     res.body as unknown as NodeReadableStream
   )).pipe(parser);
 
-  let buffer: StudentInput[] = [];
+  let buffer: SubjectInput[] = [];
 
   for await (const rawRow of stream as AsyncIterable<Row>) {
-    if(!validated){
+    if (!validated) {
       validateHeaders(rawRow);
       validated = true;
     }
 
-    const row = toStudentRow(rawRow);
+    const row = toSubjectRow(rawRow);
     buffer.push(row);
 
     rowCount++;
@@ -84,18 +84,18 @@ async function processCsv(
 
 async function handler(req: NextRequest) {
   let jobId: string | undefined;
-  
+
   try {
     const body = await req.json();
     const { fileUrl, jobId: parsedJobId } = csvProcessSchema.parse(body);
     jobId = parsedJobId;
-    
+
     const totalRows = await processCsv(fileUrl, async (rows) => {
       await qstash.publishJSON({
-        url: `${Env.apiHost}/api/batch/student/`,
+        url: `${Env.apiHost}/api/batch/subject/`,
         body: {
           jobId,
-          students: rows,
+          subjects: rows,
         },
         retries: 0
       });
@@ -104,21 +104,21 @@ async function handler(req: NextRequest) {
     await JobQueries.updateTotalRows(jobId, totalRows);
 
     return NextResponse.json({
-      message: "Processed the csv file, now creating students"
+      message: "Processed the csv file, now creating subjects"
     })
   } catch (err) {
-    console.error("Error occurred in student CSV processing:", err);
-    
+    console.error("Error occurred in subject CSV processing:", err);
+
     if (jobId) {
       const errorDetails = {
-        message: err instanceof Error ? err.message : "Unknown error occurred during student CSV processing",
+        message: err instanceof Error ? err.message : "Unknown error occurred during subject CSV processing",
         stack: err instanceof Error ? err.stack : undefined,
         timestamp: new Date().toISOString(),
-        context: "student_csv_processing"
+        context: "subject_csv_processing"
       };
       await JobQueries.updateStatusWithError(jobId, "failed", errorDetails);
     }
-    
+
     if (err instanceof AppError) {
       return NextResponse.json(
         { error: err.message, details: err.details },

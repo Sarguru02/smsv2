@@ -118,11 +118,22 @@ export function ListViewPagination<T extends DataItem = DataItem>({
       )
     }
 
-    if (value instanceof Date || (typeof value === "string" && !isNaN(Date.parse(value)))) {
+    // stricter date check
+    const isIsoDateString = (val: string) =>
+      /^\d{4}[-/]\d{2}[-/]\d{2}(T.*)?$/.test(val)
+
+    if (
+      value instanceof Date ||
+      (typeof value === "string" && isIsoDateString(value))
+    ) {
       return new Date(value as string | Date).toLocaleDateString()
     }
 
-    if (typeof value === "string" || typeof value === "number" || typeof value === "bigint") {
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "bigint"
+    ) {
       return String(value)
     }
 

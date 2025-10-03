@@ -15,14 +15,18 @@ export async function updateProcessedRowsWithIds(jobId: string, increment: numbe
         processedRows: { increment },
         processedRowIds: {
           set: [...(current.processedRowIds as string[] ?? []), ...rowIds]
-        }
+        },
+        updatedAt: new Date()
       }
     });
 
     if (updated.processedRows === updated.totalRows) {
       await tx.job.update({
         where: { id: jobId },
-        data: { status: "completed" }
+        data: {
+          status: "completed",
+          updatedAt: new Date()
+        }
       });
     }
   })

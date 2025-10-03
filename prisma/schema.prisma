@@ -28,8 +28,8 @@ model Student {
   id        String @id
   rollNo    String @unique
   name      String
-  class     String?
-  section   String?
+  class     String
+  section   String
 
   createdAt DateTime
   updatedAt DateTime
@@ -47,7 +47,7 @@ model Mark {
 
 // for the batch processor
 model Job {
-  id              String   @id @default(cuid())
+  id              String   @id
   userID          String
   fileUrl         String
   fileName        String
@@ -59,6 +59,17 @@ model Job {
   errorStatus     Json?    // error details if job failed
   fileDeleted     Boolean  @default(false) // track if the file was deleted from blob storage
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime
+  updatedAt       DateTime
+}
+
+model Subject {
+  id        String @id
+  name      String
+  class     String
+  section   String
+  maxMarks  String
+
+  createdAt DateTime
+  updatedAt DateTime
 }

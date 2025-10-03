@@ -6,8 +6,6 @@ import { AuthProvider } from '@/components/auth-provider';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { DashboardHeader } from '@/components/dashboard-header';
 import BatchUploadDialog from '@/components/dialogs/batch-upload-dialog';
-import { UploadIcon } from 'lucide-react';
-import { type NavigationItem } from '@/lib/navigation';
 import { useRouter } from 'next/navigation';
 import { Env } from '@/lib/EnvVars';
 
@@ -27,24 +25,6 @@ export default function DashboardLayout({
     }, 1500)
   };
 
-  const actionItems: NavigationItem[] = [
-    {
-      label: 'Batch Student Upload',
-      icon: UploadIcon,
-      roles: ['TEACHER', 'ADMIN'],
-      description: 'Batch upload student details',
-      type: 'action',
-      action: () => setStudentsDialogOpen(true)
-    },
-    {
-      label: 'Batch Marks Upload',
-      icon: UploadIcon,
-      roles: ['TEACHER', 'ADMIN'],
-      description: 'Batch upload student marks',
-      type: 'action',
-      action: () => setMarksDialogOpen(true)
-    }
-  ];
 
   return (
     <AuthProvider>
@@ -53,7 +33,6 @@ export default function DashboardLayout({
           <DashboardSidebar
             isMobileOpen={isMobileOpen}
             setIsMobileOpen={setIsMobileOpen}
-            actionItems={actionItems}
           />
 
           <div className="lg:pl-64">

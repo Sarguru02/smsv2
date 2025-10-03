@@ -1,11 +1,12 @@
 import { UserRole } from './types';
-import { 
-  Home, 
-  Users, 
-  GraduationCap, 
+import {
+  Home,
+  Users,
+  GraduationCap,
   User,
   type LucideIcon,
-  Book
+  Book,
+  Library
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -37,10 +38,18 @@ export const baseNavigationConfig: NavigationItem[] = [
     type: 'navigation'
   },
   {
+    label: 'Subjects',
+    href: '/dashboard/subjects',
+    icon: Library,
+    roles: ['TEACHER', 'ADMIN'],
+    description: 'Manage student records',
+    type: 'navigation'
+  },
+  {
     label: 'Exams',
     href: '/dashboard/exams',
     icon: Book,
-    roles: ['STUDENT','TEACHER', 'ADMIN'],
+    roles: ['STUDENT', 'TEACHER', 'ADMIN'],
     description: 'See Exams',
     type: 'navigation'
   },

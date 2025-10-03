@@ -71,16 +71,6 @@ async function deleteManyStudentsByRollNo(rollNos: string[]) {
   });
 }
 
-async function updateStudent(id: string, data: { rollNo?: string; name?: string; class?: string; section?: string; }) {
-  return prisma.student.update({
-    where: { id },
-    data: {
-      ...data,
-      updatedAt: new Date(),
-    },
-  });
-}
-
 async function findStudentByRollNo(rollNo: string) {
   return prisma.student.findUnique({
     where: { rollNo }
@@ -122,6 +112,5 @@ export const StudentQueries = {
   findManyStudents,
   findManyStudentsByClass,
   findManyStudentsByClassAndSection,
-  updateStudent,
   deleteManyStudentsByRollNo,
 }

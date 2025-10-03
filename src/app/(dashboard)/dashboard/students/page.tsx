@@ -6,32 +6,15 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthClient } from "@/lib/auth-client"
 import { Edit, Eye, Trash2, UserPlus, Upload } from "lucide-react"
-import NewStudentDialog from "@/components/dialogs/new-student-dialog"
-import EditStudentDialog from "@/components/dialogs/edit-student-dialog"
 import BatchUploadDialog from "@/components/dialogs/batch-upload-dialog"
 import { Env } from "@/lib/EnvVars"
 import { toast } from "sonner"
 import { AuthGuard } from "@/components/auth-guard"
+import NewEntityDialog from "@/components/dialogs/new-entity-dialog"
+import { studentCsvRequiredHeaders, StudentInput, StudentInputSchema } from "@/lib/types"
+import EditEntityDialog from "@/components/dialogs/edit-entity-dialog"
+import { Student, studentDialogFields, StudentsResponse } from "./types"
 
-type Student = {
-  id: string
-  rollNo: string
-  name: string
-  class: string | null
-  section: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-type StudentsResponse = {
-  students: Student[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([])
@@ -140,7 +123,7 @@ export default function StudentsPage() {
     const studentCount = students.length
     const studentNames = students.slice(0, 3).map(s => s.name).join(', ')
     const displayNames = studentCount > 3 ? `${studentNames} and ${studentCount - 3} others` : studentNames
-    
+
     if (confirm(`Are you sure you want to delete ${studentCount} student${studentCount > 1 ? 's' : ''}? (${displayNames})`)) {
       try {
         const rollNos = students.map(student => student.rollNo)
@@ -211,7 +194,7 @@ export default function StudentsPage() {
     }
   }
 
-  const handleAddStudent = async ({ rollNo, name, className, section }: { rollNo: string, name: string, className: string, section: string }) => {
+  const handleAddStudent = async ({ rollNo, name, className, section }: StudentInput) => {
     try {
       const response = await AuthClient.authenticatedFetch('/api/student', {
         method: 'POST',
@@ -346,7 +329,14 @@ export default function StudentsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <NewStudentDialog handleAddStudent={handleAddStudent} />
+              <NewEntityDialog
+                title="Add Student"
+                description="Fill in the student details"
+                schema={StudentInputSchema}
+                fields={studentDialogFields}
+                onSubmit={handleAddStudent}
+                buttonLabel="New Student"
+              />
             </CardContent>
           </Card>
 
@@ -364,7 +354,7 @@ export default function StudentsPage() {
                 type="STUDENT_UPLOAD"
                 processEndpoint={Env.apiHost + "/api/batch/student/process-csv"}
                 sampleCSV={{
-                  headers: ["ROLL NO", "NAME", "CLASS", "SECTION"],
+                  headers: [...studentCsvRequiredHeaders],
                   sampleData: [
                     ["2023001", "John Doe", "10", "A"],
                     ["2023002", "Jane Smith", "10", "B"],
@@ -375,7 +365,7 @@ export default function StudentsPage() {
                 formatRequirements={{
                   title: "CSV Format Requirements",
                   requirements: [
-                    "Headers: ROLL NO, NAME, CLASS, SECTION",
+                    "Headers: " + [...studentCsvRequiredHeaders].join(", "),
                     "Each row should contain student data",
                     "No empty rows or columns",
                     "Save as CSV format"
@@ -409,11 +399,26 @@ export default function StudentsPage() {
         />
 
         {/* Edit Student Dialog */}
-        <EditStudentDialog
-          student={selectedStudent}
+        <EditEntityDialog
+          title="Edit Student"
+          description="Update student details"
+          schema={StudentInputSchema}
+          fields={studentDialogFields}
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}
-          handleEditStudent={handleUpdateStudent}
+          initialValues={
+            selectedStudent
+              ? {
+                rollNo: selectedStudent.rollNo,
+                name: selectedStudent.name,
+                className: selectedStudent.class ?? "",
+                section: selectedStudent.section ?? "",
+              }
+              : null
+          }
+          onSubmit={(values) =>
+            handleUpdateStudent({ id: selectedStudent?.id ?? "", ...values })
+          }
         />
       </div>
     </AuthGuard>

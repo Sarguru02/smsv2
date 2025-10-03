@@ -2,7 +2,7 @@ import { MarkInput } from "../types";
 import { prisma } from "./prisma";
 import { Prisma } from "@/generated/prisma/client"
 
-async function createMarks(rollNo: string, examName: string, marks: Record<string, number>) {
+async function createMarks(rollNo: string, examName: string, marks: Record<string, string>) {
   return prisma.mark.create({
     data: {
       id: crypto.randomUUID(),
