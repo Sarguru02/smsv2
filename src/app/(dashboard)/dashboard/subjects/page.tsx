@@ -310,7 +310,7 @@ export default function SubjectsPage() {
                 name: selectedSubject.name,
                 className: selectedSubject.class ?? "",
                 section: selectedSubject.section ?? "",
-                maxMarks: selectedSubject.maxMarks ?? ""
+                maxMarks: selectedSubject.maxMarks?.toString() ?? "0"
               }
               : null
           }

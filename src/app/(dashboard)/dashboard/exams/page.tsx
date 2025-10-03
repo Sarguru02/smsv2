@@ -1,34 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { ListViewPagination, Column, Action, DataItem } from "@/components/list-view-pagination";
+import { ListViewPagination, Column, Action } from "@/components/list-view-pagination";
 import { AuthClient } from "@/lib/auth-client";
 import { useAuth } from "@/components/auth-provider";
 import { toast } from "sonner";
 import { Eye, Edit, Trash2, Book, BookPlus, Upload } from "lucide-react";
 import { AuthGuard } from "@/components/auth-guard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import BatchUploadDialog from "@/components/dialogs/batch-upload-dialog";
-import { Env } from "@/lib/EnvVars";
+import MarksUploadPage from "@/components/pages/MarksUploadPage";
+import NewMarksDialog from "@/components/dialogs/new-marks-dialog";
+import { Exam, ExamResponseSchema } from "./types";
 
-interface Exam extends DataItem {
-  id: string;
-  examName: string;
-  studentId: string;
-  marks: Record<string, number>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ExamResponse {
-  data: Exam[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
 
 export default function ExamsPage() {
   const { user } = useAuth();
@@ -56,7 +39,7 @@ export default function ExamsPage() {
         throw new Error("Failed to fetch exams");
       }
 
-      const result: ExamResponse = await response.json();
+      const result = ExamResponseSchema.parse(await response.json());
       setExams(result.data);
       setPagination(result.pagination);
     } catch (error) {
@@ -79,6 +62,19 @@ export default function ExamsPage() {
   const handlePageChange = (page: number) => {
     fetchExams(page, searchTerm);
   };
+
+  const handleViewExam = (exam: Exam) => {
+    // Navigate to exam details or show modal
+    toast.info(`Viewing details for ${exam.examName}`);
+  }
+
+  const handleEditMarks = (exam: Exam) => {
+    toast.info(`Editing marks for ${exam.examName}`);
+  }
+
+  const handleDeleteMarks = (exam: Exam) => {
+    toast.info(`Delete ${exam.examName}`);
+  }
 
   const calculateTotalMarks = (marks: Record<string, number>) => {
     return Object.values(marks).reduce((sum, mark) => sum + mark, 0);
@@ -129,41 +125,28 @@ export default function ExamsPage() {
     {
       icon: <Eye className="w-4 h-4" />,
       label: "View Details",
-      onClick: (exam: Exam) => {
-        // Navigate to exam details or show modal
-        toast.info(`Viewing details for ${exam.examName}`);
-      },
+      onClick: handleViewExam,
       variant: "ghost"
     },
     ...(user?.role === 'TEACHER' || user?.role === 'ADMIN' ? [
       {
         icon: <Edit className="w-4 h-4" />,
         label: "Edit Marks",
-        onClick: (exam: Exam) => {
-          toast.info(`Editing marks for ${exam.examName}`);
-        },
+        onClick: handleEditMarks,
         variant: "ghost" as const,
         showForRoles: ['TEACHER', 'ADMIN']
       },
       {
         icon: <Trash2 className="w-4 h-4" />,
         label: "Delete Exam",
-        onClick: (exam: Exam) => {
-          toast.info(`Delete ${exam.examName}`);
-        },
-        variant: "destructive" as const,
+        onClick: handleDeleteMarks,
+        variant: "ghost" as const,
         showForRoles: ['TEACHER', 'ADMIN']
       }
     ] : [])
   ];
 
-  const headers = ["ROLL NO", "SUB 1", "SUB 2", "SUB 3"];
 
-  const handleBatchUploadComplete = () => {
-    setTimeout(() => {
-      window.location.href = `/dashboard/jobs/`
-    }, 1500)
-  }
 
   const title = user?.role === 'STUDENT' ? "My Exams" : "All Exams";
   const description = user?.role === 'STUDENT'
@@ -204,14 +187,7 @@ export default function ExamsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/*<NewEntityDialog
-              title="Add Student"
-              description="Fill in the student details"
-              schema={StudentInputSchema}
-              fields={studentDialogFields}
-              onSubmit={handleAddStudent}
-              buttonLabel="New Student"
-            />*/}
+              <NewMarksDialog />
             </CardContent>
           </Card>}
 
@@ -223,31 +199,7 @@ export default function ExamsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <BatchUploadDialog
-                title="Batch Upload Marks"
-                description="Upload a CSV file to add multiple marks at once"
-                type="MARKS"
-                processEndpoint={Env.apiHost + "/api/batch/student/process-csv"}
-                sampleCSV={{
-                  headers, // to replace this with dynamic content from db.
-                  sampleData: [
-                    ["2023001", "John Doe", "10", "A"],
-                    ["2023002", "Jane Smith", "10", "B"],
-                    ["2023003", "Bob Johnson", "11", "A"]
-                  ],
-                  filename: "student_upload_sample.csv"
-                }}
-                formatRequirements={{
-                  title: "CSV Format Requirements",
-                  requirements: [
-                    "Headers: " + [...headers].join(", "),
-                    "Each row should contain student data",
-                    "No empty rows or columns",
-                    "Save as CSV format"
-                  ]
-                }}
-                onUploadComplete={handleBatchUploadComplete}
-              />
+              <MarksUploadPage />
             </CardContent>
           </Card>}
         </div>
@@ -267,7 +219,8 @@ export default function ExamsPage() {
           searchPlaceholder="Search exams..."
           emptyMessage="No exams found"
         />
-        </div>
+
+      </div>
     </AuthGuard>
   );
 }

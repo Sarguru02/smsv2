@@ -1,21 +1,26 @@
 "use client"
 
 import { useAuth } from "@/components/auth-provider"
-import { redirect } from "next/navigation";
-import { toast } from "sonner";
-import StudentPage from "../students/[rollNo]/page";
+import StudentPageClient from "@/components/pages/StudentPage";
 
 export default function StudentProfile() {
-  const { user } = useAuth();
-  if (!user || !user.username) {
-    toast.error("User not found in auth, login again");
-    setTimeout(() => {
-      redirect('/login');
-    }, 1500);
-    return (<div>
-      <p className="text-2xl"> User not found </p>
-    </div>)
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
-  return <StudentPage params={{ rollNo: user.username }} />
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-lg">Please log in to continue</div>
+      </div>
+    );
+  }
+
+  return <StudentPageClient rollNo={user.username} />
 }

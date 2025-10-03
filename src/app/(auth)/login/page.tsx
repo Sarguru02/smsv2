@@ -26,10 +26,14 @@ export default function LoginPage() {
 
     try {
       const result = await AuthClient.login(username.trim(), password.trim());
-      
+
       if (result.success && result.user) {
         // Redirect to dashboard (role-based content is handled there)
-        router.push('/dashboard');
+        if (result.user.role === 'STUDENT') {
+          router.push('/dashboard/profile')
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(result.error || 'Login failed');
       }
@@ -70,7 +74,7 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <Input
@@ -83,7 +87,7 @@ export default function LoginPage() {
                   disabled={loading}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -112,16 +116,16 @@ export default function LoginPage() {
                   </Button>
                 </div>
               </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full" 
+
+              <Button
+                type="submit"
+                className="w-full"
                 disabled={loading || !username || !password}
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
-            
+
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Don&apos;t have an account?{' '}
