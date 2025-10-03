@@ -19,6 +19,7 @@ import { AuthClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 import { upload } from "@vercel/blob/client";
 import { useAuth } from "../auth-provider"
+import { BatchUploadType } from "@/lib/types"
 
 type SampleCSVConfig = {
   headers: string[]
@@ -34,7 +35,7 @@ type FormatRequirement = {
 type Props = {
   title: string
   description: string
-  type: string
+  type: BatchUploadType
   processEndpoint: string
   sampleCSV: SampleCSVConfig
   formatRequirements: FormatRequirement

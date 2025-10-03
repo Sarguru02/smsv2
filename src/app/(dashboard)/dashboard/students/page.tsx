@@ -232,7 +232,9 @@ export default function StudentsPage() {
   }
 
   const handleBatchUploadComplete = () => {
-    window.location.href = `/dashboard/jobs/`
+    setTimeout(() => {
+      window.location.href = `/dashboard/jobs/`
+    }, 1500)
   }
 
 
@@ -351,7 +353,7 @@ export default function StudentsPage() {
               <BatchUploadDialog
                 title="Batch Upload Students"
                 description="Upload a CSV file to add multiple students at once"
-                type="STUDENT_UPLOAD"
+                type="STUDENT_DETAILS"
                 processEndpoint={Env.apiHost + "/api/batch/student/process-csv"}
                 sampleCSV={{
                   headers: [...studentCsvRequiredHeaders],

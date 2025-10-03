@@ -173,7 +173,9 @@ export default function SubjectsPage() {
   }
 
   const handleBatchUploadComplete = () => {
-    window.location.href = `/dashboard/jobs/`
+    setTimeout(() => {
+      window.location.href = `/dashboard/jobs/`
+    }, 1500)
   }
 
   const columns: Column<Subject>[] = [
@@ -247,14 +249,14 @@ export default function SubjectsPage() {
               <BatchUploadDialog
                 title="Batch Upload Subjects"
                 description="Upload a CSV file to add multiple subjects at once"
-                type="SUBJECT_UPLOAD"
+                type="SUBJECTS"
                 processEndpoint={Env.apiHost + "/api/batch/subject/process-csv"}
                 sampleCSV={{
                   headers: [...subjectCsvRequiredHeaders],
                   sampleData: [
-                    ["Mathematics","12", "A" ,"100"],
-                    ["Science","11", "B" ,"100"],
-                    ["History","10","C","50"]
+                    ["Mathematics", "12", "A", "100"],
+                    ["Science", "11", "B", "100"],
+                    ["History", "10", "C", "50"]
                   ],
                   filename: "subject_upload_sample.csv"
                 }}
