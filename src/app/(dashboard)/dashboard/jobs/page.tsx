@@ -46,7 +46,7 @@ export default function JobsPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
-  const [selectedJobs, setSelectedJobs] = useState<Set<Job>>(new Set())
+  const [selectedJobs, setSelectedJobs] = useState<Set<string>>(new Set())
 
   const fetchJobs = async (page: number = 1, search: string = "") => {
     try {

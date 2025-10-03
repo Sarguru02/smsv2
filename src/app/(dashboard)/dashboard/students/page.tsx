@@ -29,7 +29,7 @@ export default function StudentsPage() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
-  const [selectedStudents, setSelectedStudents] = useState<Set<Student>>(new Set());
+  const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
 
   const fetchStudents = async (page: number = 1, search: string = "") => {
     try {

@@ -28,7 +28,7 @@ export default function SubjectsPage() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("")
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null)
-  const [selectedSubjects, setSelectedSubjects] = useState<Set<Subject>>(new Set())
+  const [selectedSubjects, setSelectedSubjects] = useState<Set<string>>(new Set())
 
   const fetchSubjects = async (page: number = 1, search: string = "") => {
     try {

@@ -68,8 +68,8 @@ interface ListViewPaginationProps<T = DataItem> {
   searchTerm: string
   onSearchChange: (term: string) => void
   onPageChange: (page: number) => void
-  selectedItems?: Set<T>
-  setSelectedItems?: Dispatch<SetStateAction<Set<T>>>
+  selectedItems?: Set<string>
+  setSelectedItems?: Dispatch<SetStateAction<Set<string>>>
   actions?: Action<T>[]
   bulkActions?: BulkAction<T>[]
   searchPlaceholder?: string
@@ -153,9 +153,13 @@ export function ListViewPagination<T extends DataItem = DataItem>({
     setSelectedItems(prev => {
       const newSet = new Set(prev);
       if (checked) {
-        data.forEach(item => newSet.add(item));
+        data.forEach(item => {
+          if (item.id) newSet.add(item.id);
+        });
       } else {
-        data.forEach(item => newSet.delete(item));
+        data.forEach(item => {
+          if (item.id) newSet.delete(item.id);
+        });
       }
       return newSet;
     })
@@ -163,14 +167,14 @@ export function ListViewPagination<T extends DataItem = DataItem>({
   }
 
   const handleSelectItem = (item: T, checked: boolean) => {
-    if (!setSelectedItems || !selectedItems) return
+    if (!setSelectedItems || !selectedItems || !item.id) return
 
     setSelectedItems(prev => {
       const next = new Set(prev)
       if (checked) {
-        next.add(item)
+        next.add(item.id!)
       } else {
-        next.delete(item);
+        next.delete(item.id!);
       }
       return next
     })
@@ -178,7 +182,7 @@ export function ListViewPagination<T extends DataItem = DataItem>({
 
   const getSelectedItemsData = (): T[] => {
     if (!selectedItems) return []
-    return Array.from(selectedItems);
+    return data.filter(item => item.id && selectedItems.has(item.id));
   }
 
   const handleBulkAction = (action: BulkAction<T>) => {
@@ -248,7 +252,7 @@ export function ListViewPagination<T extends DataItem = DataItem>({
                   {enableBulkSelect && (
                     <TableHead className="w-12">
                       <Checkbox
-                        checked={data.length > 0 && data.every(item => selectedItems?.has(item))}
+                        checked={data.length > 0 && data.every(item => item.id && selectedItems?.has(item.id))}
                         onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
                         aria-label="Select all items"
                       />
@@ -263,7 +267,7 @@ export function ListViewPagination<T extends DataItem = DataItem>({
               <TableBody>
                 {data.map((item, index) => {
                   const itemId = item.id ?? index
-                  const isSelected = item.id ? selectedItems?.has(item) : false
+                  const isSelected = item.id ? selectedItems?.has(item.id) : false
 
                   return (
                     <TableRow key={itemId}>
