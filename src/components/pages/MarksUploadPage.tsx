@@ -3,6 +3,8 @@ import BatchUploadDialog from "../dialogs/batch-upload-dialog";
 import { Env } from "@/lib/EnvVars";
 import { Input } from "../ui/input";
 import { AuthClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { SubjectResponseSchema } from "@/app/(dashboard)/dashboard/subjects/types";
 
 export default function MarksUploadPage() {
   const [className, setClassName] = useState("");
@@ -14,11 +16,21 @@ export default function MarksUploadPage() {
     if (!className || !section) return;
 
     const fetchSubjects = async () => {
-      const res = await AuthClient.authenticatedFetch(`/api/subject?class=${className}&section=${section}`);
-      const subjects = await res.json();
+      try {
+        const res = await AuthClient.authenticatedFetch(`/api/subject?class=${className}&section=${section}`);
+        if (!res.ok) throw new Error("Failed to fetch subjects data")
 
-      // Base headers
-      setHeaders(["ROLL NO", "EXAM", ...subjects.subjects]);
+        const subs = await res.json();
+        const subjects = SubjectResponseSchema.parse(subs);
+
+        if (subjects.subjects.length === 0) throw new Error("No Subjects are found for this class.")
+
+        setHeaders(["ROLL NO", "EXAM", ...subjects.subjects.map(sub => sub.name)]);
+
+      } catch (e) {
+        console.error("Error occurred when fetching subjects: ", e);
+        toast.error ("No subjects found.");
+      }
     };
 
     fetchSubjects();
@@ -26,7 +38,6 @@ export default function MarksUploadPage() {
 
   return (
     <div>
-      {/* Step 1: select class + section */}
       <div className="mb-4">
         <label>Class</label>
         <Input value={className} onChange={(e) => setClassName(e.target.value)} />
@@ -34,8 +45,7 @@ export default function MarksUploadPage() {
         <Input value={section} onChange={(e) => setSection(e.target.value)} />
       </div>
 
-      {/* Step 2: enable dialog only when headers ready */}
-      {headers.length > 0 && (
+      {headers.length > 2 && (
         <BatchUploadDialog
           title="Batch Upload Marks"
           description="Upload a CSV file to add multiple marks at once"
