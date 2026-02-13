@@ -180,8 +180,10 @@ export default function SubjectsPage() {
 
   const columns: Column<Subject>[] = [
     { key: 'name', header: 'Subject Name' },
+    { key: 'class', header: 'Class'},
+    { key: 'section', header: 'Section'},
     { key: 'maxMarks', header: 'Max Marks' },
-    { key: 'createdAt', header: 'Created', render: (value) => new Date(String(value)).toLocaleDateString() }
+    { key: 'createdAt', header: 'Created', render: (value) => new Date(String(value)).toLocaleDateString() },
   ]
 
   const actions: Action<Subject>[] = [
