@@ -6,7 +6,8 @@ import {
   User,
   type LucideIcon,
   Book,
-  Library
+  Library,
+  Briefcase
 } from 'lucide-react';
 
 export interface NavigationItem {
@@ -51,6 +52,14 @@ export const baseNavigationConfig: NavigationItem[] = [
     icon: Book,
     roles: ['STUDENT', 'TEACHER', 'ADMIN'],
     description: 'See Exams',
+    type: 'navigation'
+  },
+  {
+    label: 'Jobs',
+    href: '/dashboard/jobs',
+    icon: Briefcase,
+    roles: ['TEACHER', 'ADMIN'],
+    description: 'Batch upload jobs',
     type: 'navigation'
   },
   {

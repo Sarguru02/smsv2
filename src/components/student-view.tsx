@@ -50,7 +50,7 @@ export function StudentView({
   const isTeacher = user?.role === 'TEACHER'
 
   const calculateTotalMarks = (subjectMarks: Record<string, number>) => {
-    return Object.values(subjectMarks).reduce((sum, mark) => sum + mark, 0)
+    return Object.values(subjectMarks).reduce((sum, mark) => sum + mark, 0);
   }
 
   const calculatePercentage = (subjectMarks: Record<string, number>) => {

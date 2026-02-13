@@ -180,8 +180,10 @@ export default function SubjectsPage() {
 
   const columns: Column<Subject>[] = [
     { key: 'name', header: 'Subject Name' },
+    { key: 'class', header: 'Class'},
+    { key: 'section', header: 'Section'},
     { key: 'maxMarks', header: 'Max Marks' },
-    { key: 'createdAt', header: 'Created', render: (value) => new Date(String(value)).toLocaleDateString() }
+    { key: 'createdAt', header: 'Created', render: (value) => new Date(String(value)).toLocaleDateString() },
   ]
 
   const actions: Action<Subject>[] = [
@@ -310,7 +312,7 @@ export default function SubjectsPage() {
                 name: selectedSubject.name,
                 className: selectedSubject.class ?? "",
                 section: selectedSubject.section ?? "",
-                maxMarks: selectedSubject.maxMarks ?? ""
+                maxMarks: selectedSubject.maxMarks?.toString() ?? "0"
               }
               : null
           }

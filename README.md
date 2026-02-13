@@ -58,6 +58,8 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] edit student route.
 - [x] delete single student route.
 - [x] delete multiple students route.
+- [x] list exams.
+- [ ] list exam actions.
 
 **STUDENT**
 - [x] list exams for that student. (will have marks for all that exams).
@@ -73,8 +75,8 @@ DATABASE_URL=postgresql://postgres@localhost:5432/mydb?schema=public
 - [x] Teacher Dashboard.
   - [x] List students view. #BACKEND_DONE
     - [x] pagination -> 10 students per page. (query when going to that page).
-  - [ ] Upload student marks (single) -> I think I can have this as an action in list view??. #BACKEND_DEPENDENCY
-  - [x] Upload student marks (batch). #BACKEND_DEPENDENCY
+  - [x] Upload student marks (single) -> I think I can have this as an action in list view??. #BACKEND_DEPENDENCY
+  - [ ] Upload student marks (batch). #BACKEND_DEPENDENCY
   - [x] Subjects crud for class and section.
   - [x] Bulk upload subjects.
   - [x] View a single student.
