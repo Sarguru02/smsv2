@@ -12,7 +12,7 @@
       perSystem = { config, self', inputs', pkgs, ... }: {
         devShells.default = pkgs.mkShell {
           name = "Bun + nextjs shell";
-          packages = with pkgs; [bun nodejs_20 vtsls prisma postgresql_18];
+          packages = with pkgs; [bun nodejs_20 vtsls prisma postgresql_18 hurl];
 
           shellHook= ''
             echo "🚀 Bun + Next.js dev shell"

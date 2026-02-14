@@ -189,6 +189,35 @@ async function findExamsByStudentPaginated(
   };
 }
 
+async function findExamsByClassAndSection(className: string, section: string, page: number = 1, limit: number = 10) {
+  const skip = (page - 1) * limit;
+  const studentWhere: Prisma.StudentWhereInput = { class: className, section };
+  const marks = await prisma.mark.findMany({
+    where: {
+      studentId: {
+        in: (
+          await prisma.student.findMany({
+            where: studentWhere,
+            select: { rollNo: true },
+          })
+        ).map(s => s.rollNo),
+      },
+    },
+    skip,
+    take: limit,
+  });
+  const total = marks.length;
+  return {
+    data: marks,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  }
+}
+
 export const MarksQueries = {
   createMarks,
   createManyMarks,
@@ -201,4 +230,5 @@ export const MarksQueries = {
   findExamsByStudent,
   findAllExams,
   findExamsByStudentPaginated,
+  findExamsByClassAndSection
 };
