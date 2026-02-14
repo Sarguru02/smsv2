@@ -1,6 +1,7 @@
 import { withAuth } from "@/lib/auth";
 import { MarksQueries } from "@/lib/db/marks.queries";
 import { NextResponse } from "next/server";
+import z from "zod";
 
 export const GET = withAuth(['STUDENT', 'TEACHER'], async (req, user) => {
   const url = new URL(req.url);
@@ -33,9 +34,16 @@ export const GET = withAuth(['STUDENT', 'TEACHER'], async (req, user) => {
   }
 });
 
-export const DELETE = withAuth(['TEACHER'], async (req, user) => {
+const DeleteExamSchema = z.object({
+  examId: z.string().trim().min(1),
+})
+
+export const DELETE = withAuth(['TEACHER'], async (req) => {
   try {
-    return NextResponse.json("success");
+    const body = await req.json();
+    const { examId } = DeleteExamSchema.parse(body);
+    const result = await MarksQueries.deleteMarksById(examId);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to delete exams", message: error },
@@ -43,3 +51,23 @@ export const DELETE = withAuth(['TEACHER'], async (req, user) => {
     )
   }
 });
+
+const UpdateMarkSchema = z.object({
+  examId: z.string(),
+  examName: z.string().optional(),
+  marks: z.record(z.string(), z.string().transform(val => parseInt(val, 10))),
+})
+
+export const PUT = withAuth(['TEACHER'], async (req) => {
+  try {
+    const body = await req.json();
+    const { examId, examName, marks } = UpdateMarkSchema.parse(body);
+    const result = MarksQueries.updateMarks(examId, { examName, marks });
+    return NextResponse.json(result);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to update exam", message: error },
+      { status: 500 }
+    )
+  }
+})
