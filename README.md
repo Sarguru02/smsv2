@@ -6,16 +6,16 @@ If you want to develop.
 
 ```bash
 # install dependencies
-npm i
+bun i
 
 # prisma migrations
-npx prisma migrate dev
+bunx prisma migrate dev
 
 # prisma initial user
-npm run seed
+bun run seed
 
 # run the development server
-npm run dev
+bun run dev
 ```
 
 ### DATABASE_URL for local postgres
