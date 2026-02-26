@@ -3,8 +3,7 @@ import { parse } from "csv-parse";
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 import type { ReadableStream as NodeReadableStream } from "stream/web";
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
-import { qstash } from "@/lib/qstash";
+import { qstash, qstashWrapper } from "@/lib/qstash";
 import { Env } from "@/lib/EnvVars";
 import { csvProcessSchema, MarkInput, MarkInputSchema, Row } from "@/lib/types";
 import { AppError, BadRequestError } from "@/lib/errors";
@@ -143,4 +142,4 @@ async function handler(req: NextRequest) {
   }
 }
 
-export const POST = verifySignatureAppRouter(handler);
+export const POST = qstashWrapper(handler);
