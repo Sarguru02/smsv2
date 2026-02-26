@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifySignatureAppRouter } from "@upstash/qstash/nextjs"
 import { SubjectInputSchema } from "@/lib/types";
 import { z } from "zod";
 import { JobQueries } from "@/lib/db/job.queries";
 import { updateProcessedRowsWithIds } from "@/services/job.service";
 import { Prisma } from "@/generated/prisma/client";
 import { SubjectQueries } from "@/lib/db/subject.queries";
+import { qstashWrapper } from "@/lib/qstash";
 
 const subjectBatchUploadSchema = z.object({
   jobId: z.string().min(1),
@@ -83,4 +83,4 @@ async function handler(req: NextRequest) {
   }
 }
 
-export const POST = verifySignatureAppRouter(handler);
+export const POST = qstashWrapper(handler);
