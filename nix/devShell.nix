@@ -3,7 +3,17 @@
 pkgs.mkShell {
 
   name = "Bun + nextjs shell";
-  packages = with pkgs; [bun nodejs_20 vtsls prisma prisma-engines postgresql_18 deadnix just];
+  packages = with pkgs; [
+    bun
+    nodejs_20
+    vtsls
+    prisma
+    prisma-engines
+    postgresql_18
+    deadnix
+    just
+    hurl
+  ];
 
   shellHook= ''
     echo "🚀 Bun + Next.js dev shell"
