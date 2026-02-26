@@ -1,7 +1,7 @@
 {pkgs, ...}:
 
 pkgs.stdenv.mkDerivation {
-  pname = "student-management-system";
+  pname = "smsv2";
   version = "0.1.0";
 
   src = ../.;
@@ -24,7 +24,17 @@ pkgs.stdenv.mkDerivation {
 
   installPhase = ''
             mkdir -p $out
-            cp -r .next public package.json $out/
+            cp -r .next public package.json node_modules $out/
+            
+            mkdir -p $out/bin
+
+            cat > $out/bin/smsv2 <<EOF
+            #!${pkgs.runtimeShell}
+            export NODE_ENV=production
+            exec ${pkgs.bun}/bin/bun run start
+            EOF
+
+            chmod +x $out/bin/smsv2
             '';
 
   dontFixup = true;
