@@ -3,7 +3,6 @@
   imports = [
     inputs.rust-flake.flakeModules.default
     inputs.rust-flake.flakeModules.nixpkgs
-    inputs.cargo-doc-live.flakeModule
   ];
   perSystem = { self', pkgs, ... }: {
     rust-project= 
@@ -11,7 +10,7 @@
       in
       {
       src = crate_path;
-      cargoToml = builtins.fromTOML (builtins.readFile (crate_path + "/Cargo.toml"));
+      cargoToml = fromTOML (builtins.readFile (crate_path + "/Cargo.toml"));
       toolchain = (pkgs.rust-bin.fromRustupToolchainFile (crate_path + /rust-toolchain.toml)).override {
         extensions = [
           "rust-src"

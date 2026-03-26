@@ -9,7 +9,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     process-compose.url = "github:Platonic-Systems/process-compose-flake";
     services-flake.url = "github:juspay/services-flake";
-    cargo-doc-live.url = "github:srid/cargo-doc-live";
     systems.url = "github:nix-systems/default";
 
     git-hooks.url = "github:cachix/git-hooks.nix";
