@@ -15,7 +15,6 @@
         bacon
         deadnix
         diesel-cli
-        config.process-compose.cargo-doc-live.outputs.package
         sqlite
       ];
     };
