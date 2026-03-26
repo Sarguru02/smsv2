@@ -50,3 +50,4 @@ TODO.md
 result
 target
 /apps/web/src/generated/prisma
+/.pre-commit-config.yaml
