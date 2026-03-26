@@ -3,29 +3,26 @@
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+    rust-flake.url = "github:juspay/rust-flake";
+    rust-flake.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     process-compose.url = "github:Platonic-Systems/process-compose-flake";
     services-flake.url = "github:juspay/services-flake";
+    cargo-doc-live.url = "github:srid/cargo-doc-live";
+    systems.url = "github:nix-systems/default";
+
+    git-hooks.url = "github:cachix/git-hooks.nix";
+    git-hooks.flake = false;
   };
 
   outputs = inputs@{ flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        inputs.process-compose.flakeModule
-      ];
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
-      perSystem = { pkgs, ... }: {
+      imports = with builtins;
+        map
+          (fn: ./nix/modules/${fn})
+          (attrNames (readDir ./nix/modules));
 
-        process-compose.services = {
-          imports = [
-            inputs.services-flake.processComposeModules.default
-            ./nix/services.nix
-          ];
-        };
-
-        devShells.default = import ./nix/devShell.nix { inherit pkgs; };
-
-        packages.default = import ./nix/package.nix { inherit pkgs; };
-      };
+      systems = import inputs.systems;
     };
 }

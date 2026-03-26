@@ -2,13 +2,15 @@
 default:
   @just --list
 
-# Run development server
-dev:
+# Run the frontend development server
+[working-directory: "apps/web"]
+frontend:
   bun dev
 
-# Seed initial data for the database
-seed:
-  bun run seed
+# Run backend server
+[working-directory: "apps/api"]
+backend:
+  cargo run
 
 # Run the services
 services:
