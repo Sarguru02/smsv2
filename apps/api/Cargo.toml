@@ -1,0 +1,8 @@
+[package]
+authors = ["Sargurunathan <psgnhealth@gmail.com>"]
+description = "Student Management System API"
+name = "smsv2"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
