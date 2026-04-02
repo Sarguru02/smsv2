@@ -2,7 +2,7 @@ use axum::Json;
 use axum::extract::State;
 
 use crate::domain::models::student::StudentError;
-use crate::handlers::student::{StudentResponse, UpdateStudentRequest, to_response};
+use crate::handlers::student::types::{StudentResponse, UpdateStudentRequest, to_response};
 use crate::infra::errors::InfraError;
 use crate::infra::repositories::student_repository::{UpdateStudent, update};
 use crate::state::AppState;
