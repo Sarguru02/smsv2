@@ -46,6 +46,7 @@ pub struct UpdateStudent {
 #[derive(Deserialize, Clone)]
 pub struct StudentFilter {
     pub class: Option<String>,
+    pub roll_no: Option<String>,
     pub section: Option<String>,
     pub name: Option<String>,
     pub page: Option<i64>,
@@ -70,6 +71,40 @@ impl StudentFilter {
             query = query.filter(student::section.eq(section));
         }
 
+        if let Some(name) = self.name {
+            query = query.filter(student::name.ilike(format!("%{}%", name)));
+        }
+
+        if let Some(roll_no) = self.roll_no {
+            query = query.filter(student::roll_no.ilike(format!("%{}%", roll_no)));
+        }
+        query
+    }
+
+    pub fn pagination<'a>(
+        self,
+        mut query: student::BoxedQuery<'a, diesel::pg::Pg>,
+    ) -> student::BoxedQuery<'a, diesel::pg::Pg> {
+        let page_no = self.page.unwrap_or(1);
+        let page_size = self.limit.unwrap_or(10);
+        let offset = (page_no - 1) * page_size;
+        query = query.limit(page_size).offset(offset);
+        query
+    }
+}
+
+#[derive(Deserialize, Clone)]
+pub struct NameFilter {
+    pub name: Option<String>,
+    pub page: Option<i64>,
+    pub limit: Option<i64>,
+}
+
+impl NameFilter {
+    pub fn apply<'a>(
+        self,
+        mut query: student::BoxedQuery<'a, diesel::pg::Pg>,
+    ) -> student::BoxedQuery<'a, diesel::pg::Pg> {
         if let Some(name) = self.name {
             query = query.filter(student::name.ilike(format!("%{}%", name)));
         }
@@ -208,6 +243,91 @@ pub async fn delete(
         .map_err(adapt_infra_error)?
         .map_err(adapt_infra_error)?;
     Ok("Student deleted".to_string())
+}
+
+pub async fn get_with_class(
+    pool: &deadpool_diesel::postgres::Pool,
+    class: String,
+    filter: NameFilter,
+) -> Result<ListStudent, InfraError> {
+    let conn = pool.get().await.map_err(adapt_infra_error)?;
+    let filter_clone = filter.clone();
+    let (total, students) = conn
+        .interact(move |conn| {
+            let mut count_query = student::table.into_boxed::<diesel::pg::Pg>();
+            count_query = filter.clone().apply(count_query);
+            let total = count_query
+                .filter(student::class.eq(class.clone()))
+                .count()
+                .get_result::<i64>(conn)?;
+
+            let mut data_query = student::table.into_boxed::<diesel::pg::Pg>();
+            data_query = filter.clone().apply(data_query);
+            data_query = filter.pagination(data_query);
+            let students = data_query
+                .filter(student::class.eq(class))
+                .select(StudentDB::as_select())
+                .load::<StudentDB>(conn)?;
+            Ok::<_, diesel::result::Error>((total, students))
+        })
+        .await
+        .map_err(adapt_infra_error)?
+        .map_err(adapt_infra_error)?;
+    let limit = filter_clone.limit.unwrap_or(10);
+    let pagination = Pagination {
+        page: filter_clone.page.unwrap_or(1),
+        limit,
+        total,
+        total_pages: total / limit,
+    };
+    Ok(ListStudent {
+        students: students.into_iter().map(to_domain).collect(),
+        pagination,
+    })
+}
+
+pub async fn get_with_class_section(
+    pool: &deadpool_diesel::postgres::Pool,
+    class: String,
+    section: String,
+    filter: NameFilter,
+) -> Result<ListStudent, InfraError> {
+    let conn = pool.get().await.map_err(adapt_infra_error)?;
+    let filter_clone = filter.clone();
+    let (total, students) = conn
+        .interact(move |conn| {
+            let mut count_query = student::table.into_boxed::<diesel::pg::Pg>();
+            count_query = filter.clone().apply(count_query);
+            let total = count_query
+                .filter(student::class.eq(class.clone()))
+                .filter(student::section.eq(section.clone()))
+                .count()
+                .get_result::<i64>(conn)?;
+
+            let mut data_query = student::table.into_boxed::<diesel::pg::Pg>();
+            data_query = filter.clone().apply(data_query);
+            data_query = filter.pagination(data_query);
+            let students = data_query
+                .filter(student::class.eq(class))
+                .filter(student::section.eq(section))
+                .select(StudentDB::as_select())
+                .load::<StudentDB>(conn)?;
+            Ok::<_, diesel::result::Error>((total, students))
+        })
+        .await
+        .map_err(adapt_infra_error)?
+        .map_err(adapt_infra_error)?;
+    let limit = filter_clone.limit.unwrap_or(10);
+    let pagination = Pagination {
+        page: filter_clone.page.unwrap_or(1),
+        limit,
+        total,
+        total_pages: total / limit,
+    };
+    Ok(ListStudent {
+        students: students.into_iter().map(to_domain).collect(),
+        pagination,
+    })
 }
 
 fn to_domain(student_db: StudentDB) -> StudentModel {

@@ -5,7 +5,8 @@ use crate::domain::models::student::StudentError;
 use crate::handlers::student::types::{ListStudentResponse, StudentResponse, to_response};
 use crate::infra::errors::InfraError;
 use crate::infra::repositories::student_repository::{
-    StudentFilter, get, get_with_filter, get_with_roll_no,
+    NameFilter, StudentFilter, get, get_with_class, get_with_class_section, get_with_filter,
+    get_with_roll_no,
 };
 use crate::state::AppState;
 use crate::utils::custom_extractors::path_extractor::PathExtractor;
@@ -47,4 +48,32 @@ pub async fn get_by_roll_no(
             InfraError::InternalServerError => StudentError::InternalServerError,
         })?;
     Ok(Json(to_response(fetched_student)))
+}
+
+pub async fn get_by_class(
+    State(state): State<AppState>,
+    PathExtractor(class): PathExtractor<String>,
+    Query(params): Query<NameFilter>,
+) -> Result<Json<ListStudentResponse>, StudentError> {
+    let res = get_with_class(&state.pool, class, params)
+        .await
+        .map_err(|_| StudentError::InternalServerError)?;
+    Ok(Json(ListStudentResponse {
+        students: res.students.into_iter().map(to_response).collect(),
+        pagination: res.pagination,
+    }))
+}
+
+pub async fn get_by_class_section(
+    State(state): State<AppState>,
+    PathExtractor((class, section)): PathExtractor<(String, String)>,
+    Query(params): Query<NameFilter>,
+) -> Result<Json<ListStudentResponse>, StudentError> {
+    let res = get_with_class_section(&state.pool, class, section, params)
+        .await
+        .map_err(|_| StudentError::InternalServerError)?;
+    Ok(Json(ListStudentResponse {
+        students: res.students.into_iter().map(to_response).collect(),
+        pagination: res.pagination,
+    }))
 }

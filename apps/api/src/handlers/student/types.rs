@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{domain::models::student::StudentModel, infra::repositories::Pagination};
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateStudentRequest {
     pub name: String,
     pub roll_no: String,
@@ -12,6 +13,7 @@ pub struct CreateStudentRequest {
 }
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateStudentRequest {
     pub id: i64,
     pub roll_no: Option<String>,
@@ -21,6 +23,7 @@ pub struct UpdateStudentRequest {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct StudentResponse {
     id: i64,
     roll_no: String,
@@ -32,6 +35,7 @@ pub struct StudentResponse {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ListStudentResponse {
     pub students: Vec<StudentResponse>,
     pub pagination: Pagination,

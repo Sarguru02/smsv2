@@ -10,12 +10,15 @@ use axum::routing::delete;
 use axum::routing::get;
 use axum::routing::post;
 use axum::routing::put;
-pub use create_student::create_student;
-pub use delete_student::delete_student;
-pub use get_student::get_by_roll_no;
-pub use get_student::get_student;
-pub use get_student::list_students;
-pub use update_student::update_student;
+
+use create_student::create_student;
+use delete_student::delete_student;
+use get_student::get_by_class;
+use get_student::get_by_class_section;
+use get_student::get_by_roll_no;
+use get_student::get_student;
+use get_student::list_students;
+use update_student::update_student;
 
 use crate::state::AppState;
 
@@ -27,5 +30,7 @@ pub fn router(state: AppState) -> Router<AppState> {
         .route("/{id}", delete(delete_student))
         .route("/{id}", get(get_student))
         .route("/rollNo/{rollNo}", get(get_by_roll_no))
+        .route("/class/{class}/{section}", get(get_by_class_section))
+        .route("/class/{class}", get(get_by_class))
         .with_state(state)
 }
