@@ -47,7 +47,7 @@ pub struct UpdateStudent {
 pub struct StudentFilter {
     pub class: Option<String>,
     pub section: Option<String>,
-    pub name_contains: Option<String>,
+    pub name: Option<String>,
     pub page: Option<i64>,
     pub limit: Option<i64>,
 }
@@ -70,7 +70,7 @@ impl StudentFilter {
             query = query.filter(student::section.eq(section));
         }
 
-        if let Some(name) = self.name_contains {
+        if let Some(name) = self.name {
             query = query.filter(student::name.ilike(format!("%{}%", name)));
         }
         query
