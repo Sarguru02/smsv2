@@ -3,7 +3,7 @@ use axum::extract::State;
 use chrono::Utc;
 
 use crate::domain::models::student::StudentError;
-use crate::handlers::student::{CreateStudentRequest, StudentResponse, to_response};
+use crate::handlers::student::types::{CreateStudentRequest, StudentResponse, to_response};
 use crate::infra::repositories::student_repository::{self, NewStudentDB};
 use crate::state::AppState;
 use crate::utils::custom_extractors::json_extractor::JsonExtractor;
