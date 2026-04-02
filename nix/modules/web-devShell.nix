@@ -1,6 +1,6 @@
 { ... }:
 {
-  perSystem = {self', pkgs, config, ...}: {
+  perSystem = { self', pkgs, ... }: {
     devShells.web = pkgs.mkShell {
       name = "web-devshell";
       inputsFrom = [
@@ -12,11 +12,10 @@
         nodejs_20
         prisma
         prisma-engines
-        config.process-compose.services.services.postgres."postgres".package
       ];
 
       shellHook = ''
-      echo "🌐 Web shell"
+        echo "🌐 Web shell"
       '';
     };
   };
