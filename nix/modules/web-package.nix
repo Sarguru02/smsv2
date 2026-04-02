@@ -1,14 +1,15 @@
-{pkgs, ...}:
+{...}:
+{
+  perSystem = {pkgs, ...}: {
+    packages.web = pkgs.stdenv.mkDerivation {
+      pname = "smsv2";
+      version = "0.1.0";
 
-pkgs.stdenv.mkDerivation {
-  pname = "smsv2";
-  version = "0.1.0";
+      src = ../.;
 
-  src = ../.;
+      nativeBuildInputs = with pkgs; [bun nodejs_20 prisma_6 prisma-engines_6];
 
-  nativeBuildInputs = with pkgs; [bun nodejs_20 prisma_6 prisma-engines_6];
-
-  buildPhase = ''
+      buildPhase = ''
             export HOME=$TMPDIR
 
             export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
@@ -22,10 +23,10 @@ pkgs.stdenv.mkDerivation {
             bun run build
             '';
 
-  installPhase = ''
+      installPhase = ''
             mkdir -p $out
             cp -r .next public package.json node_modules $out/
-            
+
             mkdir -p $out/bin
 
             cat > $out/bin/smsv2 <<EOF
@@ -37,5 +38,7 @@ pkgs.stdenv.mkDerivation {
             chmod +x $out/bin/smsv2
             '';
 
-  dontFixup = true;
+      dontFixup = true;
+    };
+  };
 }
