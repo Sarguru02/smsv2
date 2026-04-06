@@ -17,6 +17,7 @@
           prisma_6
           prisma-engines_6
           bun2nix.hook
+          stdenv.cc.cc.lib
         ];
 
         bunDeps = bun2nix.fetchBunDeps {
