@@ -35,7 +35,7 @@
         #!${pkgs.runtimeShell}
         export NODE_ENV=production
         cd $out/lib/smsv2
-        exec ${pkgs.nodejs_20}/bin/node ./node_modules/.bin/next start
+        exec ${pkgs.nodejs_20}/bin/node ./node_modules/next/dist/bin/next start
         EOF
 
         chmod +x $out/bin/smsv2
