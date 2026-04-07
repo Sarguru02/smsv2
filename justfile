@@ -5,7 +5,7 @@ default:
 # Run the frontend development server
 [working-directory: "apps/web"]
 frontend:
-  bun dev
+  pnpm dev
 
 # Run backend server
 [working-directory: "apps/api"]
