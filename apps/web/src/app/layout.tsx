@@ -5,13 +5,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
 const geistSans = localFont({
-  src: "./fonts/Geist[wght].woff2",
+  src: "./fonts/Geist-VF.woff2",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
 
 const geistMono = localFont({
-  src: "./fonts/GeistMono[wght].woff2",
+  src: "./fonts/GeistMono-VF.woff2",
   variable: "--font-geist-mono",
   weight: "100 900",
 });

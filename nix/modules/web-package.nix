@@ -30,6 +30,9 @@
         buildPhase = ''
           export HOME=$TMPDIR
 
+          # Needed for native Node modules (bcrypt) during build
+          export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
           export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
           export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/schema-engine"
           export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/query-engine"
@@ -50,6 +53,10 @@
           # Copy the generated Prisma client (required at runtime)
           mkdir -p $out/lib/smsv2/src/generated
           cp -r src/generated/prisma $out/lib/smsv2/src/generated/
+
+          # Copy font files (required by next/font/local)
+          mkdir -p $out/lib/smsv2/src/app/fonts
+          # cp -r src/app/fonts/*.woff2 $out/lib/smsv2/src/app/fonts/
 
           # Replace the bundled query engine with a symlink to the nix store
           # This ensures the correct platform-specific engine is used at runtime
