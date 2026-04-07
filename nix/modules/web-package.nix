@@ -17,7 +17,7 @@
         pname = "smsv2";
         version = "0.1.0";
         src = ../../apps/web;
-        hash = "sha256-KNJlxOEFh3oxwbwDm9+4E5rmYdAQX+39dkt3UTm+23A=";
+        hash = "sha256-jjX2UI44Fvh20tHrIxAkLUhAlvhZtVo5qcvt30JKpjg=";
         fetcherVersion = 3;
       };
 
