@@ -10,7 +10,6 @@
       buildInputs = with pkgs; [
         pnpm
         nodejs_20
-        config.process-compose.services.services.postgres."postgres".package
       ];
 
       shellHook = ''
