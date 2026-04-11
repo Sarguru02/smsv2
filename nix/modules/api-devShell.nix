@@ -1,11 +1,12 @@
 { ... }:
 {
-  perSystem = { self', pkgs, ... }: {
+  perSystem = { self', pkgs, config, ... }: {
     devShells.api = pkgs.mkShell {
       name = "Rust api shell";
       inputsFrom = [
-        self'.devShells.rust
         self'.devShells.common
+        self'.devShells.rust
+        config.pre-commit.devShell
       ];
 
       shellHook = ''

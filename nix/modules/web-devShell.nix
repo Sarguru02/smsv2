@@ -1,6 +1,6 @@
 { ... }:
 {
-  perSystem = {self', pkgs, config, ...}: {
+  perSystem = { self', pkgs, ... }: {
     devShells.web = pkgs.mkShell {
       name = "web-devshell";
       inputsFrom = [
@@ -14,7 +14,7 @@
       ];
 
       shellHook = ''
-      echo "🌐 Web shell"
+        echo "🌐 Web shell"
       '';
     };
   };
