@@ -10,14 +10,14 @@ use crate::utils::custom_extractors::json_extractor::JsonExtractor;
 
 pub async fn create_student(
     State(state): State<AppState>,
-    JsonExtractor(new_student): JsonExtractor<CreateStudentRequest>,
+    JsonExtractor(student_req): JsonExtractor<CreateStudentRequest>,
 ) -> Result<Json<StudentResponse>, StudentError> {
     let current_time = Utc::now();
     let new_student_db = NewStudentDB {
-        roll_no: new_student.roll_no,
-        class: new_student.class,
-        name: new_student.name,
-        section: new_student.section,
+        roll_no: student_req.roll_no,
+        class: student_req.class,
+        name: student_req.name,
+        section: student_req.section,
         created_at: current_time,
         last_updated: current_time,
     };
