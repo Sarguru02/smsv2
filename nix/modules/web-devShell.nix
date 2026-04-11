@@ -8,10 +8,9 @@
       ];
 
       buildInputs = with pkgs; [
-        bun
+        pnpm
         nodejs_20
-        prisma
-        prisma-engines
+        config.process-compose.services.services.postgres."postgres".package
       ];
 
       shellHook = ''

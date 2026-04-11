@@ -5,34 +5,37 @@
       pname = "smsv2";
       version = "0.1.0";
 
-      src = ../.;
+      src = ../../apps/web;
 
-      nativeBuildInputs = with pkgs; [ bun nodejs_20 prisma_6 prisma-engines_6 ];
+      nativeBuildInputs = with pkgs; [
+        nodejs_20
+        pnpm
+        pnpmConfigHook
+      ];
+
+      pnpmDeps = pkgs.fetchPnpmDeps {
+        pname = "smsv2";
+        version = "0.1.0";
+        src = ../../apps/web;
+        hash = "sha256-jjX2UI44Fvh20tHrIxAkLUhAlvhZtVo5qcvt30JKpjg=";
+        fetcherVersion = 3;
+      };
 
       buildPhase = ''
         export HOME=$TMPDIR
 
-        export PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig"
-        export PRISMA_SCHEMA_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/schema-engine"
-        export PRISMA_QUERY_ENGINE_BINARY="${pkgs.prisma-engines_6}/bin/query-engine"
-        export PRISMA_QUERY_ENGINE_LIBRARY="${pkgs.prisma-engines_6}/lib/libquery_engine.node"
-        export PRISMA_FMT_BINARY="${pkgs.prisma-engines_6}/bin/prisma-fmt"
-
-        bun install --frozen-lockfile
-        prisma generate
-        bun run build
+        pnpm run build
       '';
 
       installPhase = ''
-        mkdir -p $out
-        cp -r .next public package.json node_modules $out/
-
-        mkdir -p $out/bin
+        mkdir -p $out/{bin,lib/smsv2}
+        cp -r .next public package.json node_modules $out/lib/smsv2
 
         cat > $out/bin/smsv2 <<EOF
         #!${pkgs.runtimeShell}
         export NODE_ENV=production
-        exec ${pkgs.bun}/bin/bun run start
+        cd $out/lib/smsv2
+        exec ${pkgs.nodejs_20}/bin/node ./node_modules/next/dist/bin/next start
         EOF
 
         chmod +x $out/bin/smsv2
