@@ -1,4 +1,5 @@
 // Define needed modules
+mod auth;
 mod config;
 mod domain;
 mod errors;
@@ -19,6 +20,7 @@ use fastrace::collector::{Config, ConsoleReporter};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
+use crate::auth::Keys;
 use crate::config::config;
 use crate::errors::{AppError, internal_error};
 use crate::routes::get_app;
@@ -43,7 +45,10 @@ async fn main() {
         return;
     }
 
-    let state = AppState { pool };
+    let state = AppState {
+        pool,
+        keys: Keys::new(app_config.jwt_signing_key().as_bytes()),
+    };
 
     let host = app_config.server_host();
     let port = app_config.server_port();

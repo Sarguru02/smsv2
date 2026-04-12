@@ -18,6 +18,7 @@ struct DatabaseConfig {
 pub struct Config {
     server: ServerConfig,
     db: DatabaseConfig,
+    jwt_secret: String,
 }
 
 impl Config {
@@ -31,6 +32,10 @@ impl Config {
 
     pub fn server_port(&self) -> u16 {
         self.server.port
+    }
+
+    pub fn jwt_signing_key(&self) -> &str {
+        &self.jwt_secret
     }
 }
 
@@ -50,9 +55,17 @@ async fn init_config() -> Config {
     let db_config = DatabaseConfig {
         url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
     };
+
+    let jwt_secret = env::var("JWT_SECRET").unwrap_or_else(|_| {
+        let default_key = "jwt_secret_for_smsv2";
+        tracing::info!("Using default JWT_SECRET: {}", default_key);
+        default_key.to_string()
+    });
+
     Config {
         server: server_config,
         db: db_config,
+        jwt_secret: jwt_secret,
     }
 }
 
