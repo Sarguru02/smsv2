@@ -2,7 +2,7 @@ use axum::Json;
 use axum::extract::{Query, State};
 
 use crate::domain::models::student::StudentError;
-use crate::handlers::student::types::{ListStudentResponse, StudentResponse, to_response};
+use crate::handlers::student_handler::types::{ListStudentResponse, StudentResponse, to_response};
 use crate::infra::errors::InfraError;
 use crate::infra::repositories::student_repository::{
     NameFilter, StudentFilter, get, get_with_class, get_with_class_section, get_with_filter,
@@ -19,7 +19,7 @@ pub async fn get_student(
         .await
         .map_err(|err| match err {
             InfraError::NotFound => StudentError::NotFound(student_id),
-            InfraError::InternalServerError => StudentError::InternalServerError,
+            InfraError::InternalServerError(_) => StudentError::InternalServerError,
         })?;
     Ok(Json(to_response(fetched_student)))
 }
@@ -45,7 +45,7 @@ pub async fn get_by_roll_no(
         .await
         .map_err(|err| match err {
             InfraError::NotFound => StudentError::RollNoNotFound(roll_no),
-            InfraError::InternalServerError => StudentError::InternalServerError,
+            InfraError::InternalServerError(_) => StudentError::InternalServerError,
         })?;
     Ok(Json(to_response(fetched_student)))
 }

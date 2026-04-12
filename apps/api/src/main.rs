@@ -43,7 +43,10 @@ async fn main() {
         return;
     }
 
-    let state = AppState { pool };
+    let state = AppState {
+        pool,
+        salt_rounds: app_config.salt_rounds(),
+    };
 
     let host = app_config.server_host();
     let port = app_config.server_port();

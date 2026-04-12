@@ -18,6 +18,7 @@ struct DatabaseConfig {
 pub struct Config {
     server: ServerConfig,
     db: DatabaseConfig,
+    salt_rounds: u32,
 }
 
 impl Config {
@@ -31,6 +32,10 @@ impl Config {
 
     pub fn server_port(&self) -> u16 {
         self.server.port
+    }
+
+    pub fn salt_rounds(&self) -> u32 {
+        self.salt_rounds
     }
 }
 
@@ -50,9 +55,18 @@ async fn init_config() -> Config {
     let db_config = DatabaseConfig {
         url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
     };
+
+    let salt_rounds = env::var("SALT_ROUNDS")
+        .unwrap_or_else(|_| {
+            tracing::warn!("No value set for SALT_ROUNDS");
+            "12".to_string()
+        })
+        .parse::<u32>()
+        .unwrap();
     Config {
         server: server_config,
         db: db_config,
+        salt_rounds,
     }
 }
 

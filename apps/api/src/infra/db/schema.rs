@@ -11,3 +11,16 @@ diesel::table! {
         last_updated -> Timestamptz,
     }
 }
+
+diesel::table! {
+    users (id) {
+        id -> Int8,
+        username -> Text,
+        password -> Text,
+        role -> Text,
+        created_at -> Timestamptz,
+        last_updated -> Timestamptz,
+    }
+}
+
+diesel::allow_tables_to_appear_in_same_query!(student, users,);
