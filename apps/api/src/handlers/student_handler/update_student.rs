@@ -2,7 +2,7 @@ use axum::Json;
 use axum::extract::State;
 
 use crate::domain::models::student::StudentError;
-use crate::handlers::student::types::{StudentResponse, UpdateStudentRequest, to_response};
+use crate::handlers::student_handler::types::{StudentResponse, UpdateStudentRequest, to_response};
 use crate::infra::errors::InfraError;
 use crate::infra::repositories::student_repository::{UpdateStudent, update};
 use crate::state::AppState;
@@ -22,7 +22,7 @@ pub async fn update_student(
         .await
         .map_err(|err| match err {
             InfraError::NotFound => StudentError::NotFound(student_updates.id),
-            InfraError::InternalServerError => StudentError::InternalServerError,
+            InfraError::InternalServerError(_) => StudentError::InternalServerError,
         })?;
     Ok(Json(to_response(updated_student)))
 }

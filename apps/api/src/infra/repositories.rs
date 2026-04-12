@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod student_repository;
+pub mod users_repository;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Pagination {
