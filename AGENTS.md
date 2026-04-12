@@ -6,15 +6,46 @@
 
 ## Terminal Commands
 
-Never use `| tail` or `| head` - run commands directly in terminal so the user can see output in real-time. Use command_status to check results after.
+Never use `| tail` or `| head` - run commands directly in terminal so the user can see output in real-time.
 
 Always use `git --no-pager` for git commands that produce output (e.g. `git --no-pager diff`, `git --no-pager log`). The default pager will hang.
 
-## GitHub Issues
+## GitHub CLI
 
-Always write issue body to a `.md` file first, then use `gh issue create --body-file`. Do not pass the body inline — long bodies break in the shell.
+Always write bodies to a temp file first, then use `--body-file`. Do not pass bodies inline — long bodies break in the shell.
 
 ```bash
-# Write body to temp file, then:
-git issue create --title "Issue Title" --body-file /tmp/issue-body.md
+# Issues
+gh issue create --title "Title" --body-file /tmp/issue-body.md
+
+# PRs
+gh pr create --base <base> --title "Title" --body-file /tmp/pr-body.md
+```
+
+## Project Structure
+
+Monorepo with two apps:
+- `apps/api` — Rust backend (Axum, Diesel, PostgreSQL)
+- `apps/web` — Next.js frontend
+
+## Development Commands
+
+```bash
+just frontend     # Run Next.js dev server (apps/web)
+just backend      # Run Rust API server (apps/api)
+just services     # Start PostgreSQL via nix process-compose
+```
+
+## Database
+
+- Database name: `sms`
+- PostgreSQL runs on port 5432
+- `DATABASE_URL` required in `apps/api/.env`
+- Diesel migrations are embedded and run automatically on API startup
+
+## API Testing
+
+Use `hurl` with `hurl/variables.env`:
+```bash
+hurl --variables-file hurl/variables.env hurl/login.hurl
 ```
